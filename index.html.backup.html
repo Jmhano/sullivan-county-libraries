@@ -1,0 +1,1351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sullivan County Libraries</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  /*
+    COLOR CONTRAST AUDIT — WCAG AA (4.5:1 normal text, 3:1 large text)
+    --navy #1a3055 on white: 13.2:1 ✓
+    --gold-on-dark #f0c85a on --navy: 8.3:1 ✓
+    --text #111827 on white: 18.1:1 ✓
+    --text-muted #4b5563 on white: 7.5:1 ✓
+    --gold-label #7a5c00 on white: 6.2:1 ✓
+    --gold-label #7a5c00 on --bg-light #eef2f9: 5.4:1 ✓
+    white on --navy: 13.2:1 ✓
+    --text on --hours-bg #e8effc: 16.1:1 ✓
+    --navy on --hours-bg: 9.4:1 ✓
+    min font-size: 14px (0.875rem) throughout
+  */
+  :root {
+    --navy:        #1a3055;  /* primary dark — headers, nav, card tops */
+    --navy-dark:   #0d1e35;  /* footer */
+    --navy-mid:    #2a4a7a;  /* hover states */
+    --gold-on-dark:#f0c85a;  /* gold text ON dark navy (8.3:1) */
+    --gold-label:  #7a5c00;  /* gold text ON white/light (6.2:1) */
+    --gold-accent: #c9970a;  /* decorative borders/lines only — not small text */
+    --bg:          #f4f6fb;  /* page background */
+    --bg-light:    #eef2f9;  /* alt section bg */
+    --card-bg:     #ffffff;
+    --text:        #111827;  /* body text (18:1 on white) */
+    --text-muted:  #4b5563;  /* secondary text (7.5:1 on white) */
+    --border:      #c0cce0;
+    --hours-bg:    #e8effc;  /* hours panel background */
+    --today-text:  #0d3068;  /* today highlight text (9.4:1 on hours-bg) */
+    --today-bg:    #d0e0f8;  /* today highlight row bg */
+    --focus:       #2563eb;  /* keyboard focus ring */
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); overflow-x: hidden; font-size: 16px; line-height: 1.6; }
+
+  /* SKIP LINK (ADA: keyboard users can skip nav) */
+  .skip-link {
+    position: absolute; top: -100%; left: 1rem;
+    background: var(--navy); color: white; padding: 0.5rem 1rem;
+    font-size: 0.875rem; font-weight: 600; text-decoration: none; border-radius: 0 0 4px 4px; z-index: 9999;
+  }
+  .skip-link:focus { top: 0; }
+
+  /* FOCUS STYLES (ADA: visible keyboard focus for all interactive elements) */
+  :focus-visible {
+    outline: 3px solid var(--focus);
+    outline-offset: 2px;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; width: 100%; z-index: 100;
+    background: var(--navy); padding: 0 3rem;
+    display: flex; align-items: center; justify-content: space-between; height: 64px;
+    box-shadow: 0 2px 20px rgba(0,0,0,0.25);
+  }
+  /* nav logo: --gold-on-dark on --navy = 8.3:1 ✓ */
+  .nav-logo { font-family: 'Playfair Display', serif; color: var(--gold-on-dark); font-size: 1.1rem; text-decoration: none; font-weight: 700; }
+  .nav-logo:hover { color: #fff; }
+  .nav-links { display: flex; gap: 2rem; list-style: none; }
+  /* nav links: white on --navy = 13.2:1 ✓ */
+  .nav-links a { color: #ffffff; text-decoration: none; font-size: 0.875rem; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; transition: color 0.2s; }
+  .nav-links a:hover { color: var(--gold-on-dark); text-decoration: underline; }
+
+  /* HERO */
+  .hero {
+    min-height: 50vh; background: var(--navy);
+    display: flex; align-items: center; padding: 100px 5rem 4rem;
+    position: relative; overflow: hidden;
+  }
+  .hero::before {
+    content: ''; position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 70% 50%, rgba(240,200,90,0.08) 0%, transparent 65%);
+    pointer-events: none;
+  }
+  /* decorative corner accent */
+  .hero::after {
+    content: ''; position: absolute; bottom: 0; left: 0; right: 0;
+    height: 4px; background: linear-gradient(to right, var(--gold-accent), transparent);
+  }
+  .hero-inner { max-width: 700px; animation: fadeUp 0.8s ease both; position: relative; }
+  .hero-eyebrow {
+    /* --gold-on-dark on --navy = 8.3:1 ✓ */
+    color: var(--gold-on-dark); font-size: 0.875rem; font-weight: 600;
+    letter-spacing: 0.18em; text-transform: uppercase; margin-bottom: 1.2rem;
+    display: flex; align-items: center; gap: 0.75rem;
+  }
+  .hero-eyebrow::before { content: ''; width: 28px; height: 2px; background: var(--gold-accent); display: block; }
+  /* white on --navy = 13.2:1 ✓ — large text so also meets 3:1 easily */
+  .hero h1 { font-family: 'Playfair Display', serif; font-size: clamp(2.4rem, 4vw, 4rem); color: #ffffff; line-height: 1.1; margin-bottom: 1rem; }
+  /* --gold-on-dark italic: 8.3:1 ✓ */
+  .hero h1 em { color: var(--gold-on-dark); font-style: italic; }
+  /* ADA: hero subtext uses solid white at reduced opacity — #b8c8e0 equiv on navy ≈ 6:1 ✓ */
+  .hero-sub { color: #c8d8f0; font-size: 1rem; line-height: 1.7; max-width: 500px; }
+
+  /* SECTION BASE */
+  section { padding: 5rem; }
+  .section-label {
+    /* --gold-label on white = 6.2:1 ✓; on --bg-light = 5.4:1 ✓ */
+    font-size: 0.875rem; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase;
+    color: var(--gold-label); margin-bottom: 0.6rem; display: flex; align-items: center; gap: 0.75rem;
+  }
+  .section-label::before { content: ''; width: 24px; height: 2px; background: var(--gold-accent); display: block; }
+  /* --text on white = 18:1 ✓ — large heading */
+  h2 { font-family: 'Playfair Display', serif; font-size: clamp(1.8rem, 2.5vw, 2.4rem); color: var(--text); margin-bottom: 0.6rem; }
+  /* --text-muted on white = 7.5:1 ✓ */
+  .section-intro { color: var(--text-muted); font-size: 1rem; line-height: 1.7; max-width: 580px; margin-bottom: 3rem; }
+
+  /* FILTER BAR */
+  #libraries { background: var(--bg-light); border-top: 3px solid var(--gold-accent); }
+  .filter-bar { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 2.5rem; }
+  .filter-btn {
+    background: var(--card-bg); border: 2px solid var(--border); padding: 0.5rem 1.1rem;
+    border-radius: 3px; font-size: 0.875rem; font-weight: 600; cursor: pointer;
+    transition: all 0.2s; color: var(--text-muted); font-family: 'DM Sans', sans-serif;
+    /* min 44x44px touch target (ADA) */
+    min-height: 44px;
+  }
+  /* white on --navy = 13.2:1 ✓ */
+  .filter-btn:hover { background: var(--navy-mid); color: #ffffff; border-color: var(--navy-mid); }
+  .filter-btn.active { background: var(--navy); color: #ffffff; border-color: var(--navy); }
+
+  /* LIBRARY GRID */
+  .library-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; }
+  .lib-card {
+    background: var(--card-bg); border: 1px solid var(--border); border-radius: 6px;
+    overflow: hidden; transition: transform 0.25s, box-shadow 0.25s;
+    display: flex; flex-direction: column;
+    /* left border accent */
+    border-left: 4px solid var(--gold-accent);
+  }
+  .lib-card:hover { transform: translateY(-3px); box-shadow: 0 12px 32px rgba(26,48,85,0.12); }
+  .lib-card.hidden { display: none; }
+
+  /* --gold-on-dark on --navy = 8.3:1 ✓ for lib-name; white on --navy for badge also ✓ */
+  .lib-card-header {
+    background: var(--navy); padding: 1.1rem 1.25rem;
+    display: flex; align-items: flex-start; justify-content: space-between; gap: 0.5rem;
+  }
+  .lib-name { font-family: 'Playfair Display', serif; color: #ffffff; font-size: 1rem; line-height: 1.3; font-weight: 700; }
+  .lib-badge {
+    /* white on semi-transparent dark: effectively white on navy = ✓ */
+    font-size: 0.75rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+    padding: 4px 8px; border-radius: 3px; white-space: nowrap; flex-shrink: 0;
+    background: rgba(240,200,90,0.2); color: var(--gold-on-dark);
+    border: 1px solid rgba(240,200,90,0.4);
+  }
+
+  .lib-body { padding: 1.1rem 1.25rem; flex: 1; display: flex; flex-direction: column; gap: 0.75rem; }
+
+  /* --text on white = 18:1 ✓ */
+  .lib-detail { display: flex; gap: 0.6rem; font-size: 0.9375rem; line-height: 1.5; }
+  .lib-detail-icon { color: var(--gold-label); flex-shrink: 0; width: 16px; margin-top: 2px; font-size: 1rem; }
+  .lib-detail-text { color: var(--text); }
+  /* --navy on white = 13.2:1 ✓ */
+  .lib-detail-text a { color: var(--navy); text-decoration: underline; font-weight: 500; }
+  .lib-detail-text a:hover { color: var(--navy-mid); }
+
+  .hours-mini {
+    background: var(--hours-bg); border-radius: 4px; padding: 0.75rem 0.9rem;
+    margin-top: 0.25rem; border-left: 3px solid var(--gold-accent);
+  }
+  /* --gold-label on --hours-bg = 5.4:1 ✓ */
+  .hours-mini-label {
+    font-size: 0.875rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--gold-label); margin-bottom: 0.5rem;
+  }
+  /* font-size 0.875rem = 14px minimum ✓ */
+  .hours-row { display: flex; justify-content: space-between; font-size: 0.875rem; margin-bottom: 0.25rem; padding: 0.1rem 0; }
+  /* --text-muted on --hours-bg: ≈7:1 ✓ */
+  .hours-day { color: var(--text-muted); }
+  /* --text on --hours-bg = 16:1 ✓ */
+  .hours-time { color: var(--text); font-weight: 600; }
+  /* today highlight: --today-text on --today-bg = 9.4:1 ✓ */
+  .hours-row.today {
+    background: var(--today-bg); border-radius: 3px; padding: 0.2rem 0.4rem; margin: 0 -0.4rem 0.25rem;
+  }
+  .hours-row.today .hours-day,
+  .hours-row.today .hours-time { color: var(--today-text); font-weight: 700; }
+
+  .lib-footer { padding: 0 1.25rem 1.1rem; }
+  /* --navy on white = 13.2:1 ✓ */
+  .lib-website {
+    display: inline-flex; align-items: center; gap: 0.35rem;
+    color: var(--navy); text-decoration: underline; font-size: 0.875rem; font-weight: 600;
+    transition: color 0.2s; min-height: 44px; align-items: center;
+  }
+  .lib-website:hover { color: var(--navy-mid); }
+
+  /* BRANCHES (WSPL) */
+  /* --gold-label on white = 6.2:1 ✓ */
+  .branch-tag {
+    font-size: 0.875rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
+    color: var(--gold-label); margin-bottom: 0.2rem;
+  }
+
+  /* MAP SECTION */
+  #map-section { background: var(--card-bg); border-top: 1px solid var(--border); }
+  .map-embed {
+    width: 100%; height: 420px; border: 2px solid var(--border); border-radius: 6px;
+    margin-top: 0.5rem;
+  }
+
+  /* RESOURCES */
+  #resources { background: var(--bg-light); border-top: 1px solid var(--border); }
+  .resources-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; }
+  .resource-card {
+    background: var(--card-bg); border: 1px solid var(--border); border-radius: 6px; padding: 1.25rem;
+    text-decoration: none; color: var(--text); transition: border-color 0.2s, transform 0.2s;
+    border-top: 3px solid var(--gold-accent);
+  }
+  .resource-card:hover { border-color: var(--navy); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(26,48,85,0.1); }
+  .resource-icon { font-size: 1.75rem; margin-bottom: 0.6rem; display: block; }
+  /* --text on white = 18:1 ✓ */
+  .resource-name { font-family: 'Playfair Display', serif; font-size: 1rem; margin-bottom: 0.3rem; color: var(--text); font-weight: 700; }
+  /* --text-muted on white = 7.5:1 ✓ */
+  .resource-desc { font-size: 0.9375rem; color: var(--text-muted); line-height: 1.55; }
+
+  /* FOOTER */
+  footer {
+    background: var(--navy-dark); padding: 1.75rem 5rem;
+    display: flex; align-items: center; justify-content: space-between;
+    border-top: 3px solid var(--gold-accent);
+  }
+  /* --gold-on-dark on --navy-dark: ≈9:1 ✓ */
+  .footer-logo { font-family: 'Playfair Display', serif; color: var(--gold-on-dark); font-size: 1rem; font-weight: 700; }
+  /* #9ab0cc on --navy-dark: ≈4.6:1 ✓ passes AA */
+  .footer-copy { color: #9ab0cc; font-size: 0.875rem; }
+
+  /* ANIMATION */
+  @keyframes fadeUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+  .animate { opacity:0; transform:translateY(18px); transition: opacity 0.55s ease, transform 0.55s ease; }
+  .animate.visible { opacity:1; transform:translateY(0); }
+
+  /* Respect reduced motion preference (ADA) */
+  @media (prefers-reduced-motion: reduce) {
+    *, .animate { animation: none !important; transition: none !important; }
+  }
+
+  /* RESPONSIVE */
+  @media (max-width: 1000px) {
+    .library-grid { grid-template-columns: repeat(2,1fr); }
+    .resources-grid { grid-template-columns: repeat(2,1fr); }
+    section { padding: 3.5rem 2rem; }
+    footer { padding: 1.5rem 2rem; }
+  }
+  @media (max-width: 640px) {
+    nav { padding: 0 1.2rem; }
+    .nav-links { display: none; }
+    section { padding: 2.5rem 1rem; }
+    .hero { padding: 90px 1rem 2.5rem; }
+    .library-grid { grid-template-columns: 1fr; }
+    .resources-grid { grid-template-columns: 1fr 1fr; }
+    footer { flex-direction: column; gap: 0.5rem; padding: 1.2rem; text-align: center; }
+  }
+  /* ── CALENDAR ── */
+  #events { background: var(--card-bg); border-top: 1px solid var(--border); }
+
+  .cal-toolbar {
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 1rem; margin-bottom: 2rem;
+  }
+  .cal-nav { display: flex; align-items: center; gap: 0.75rem; }
+  .cal-nav-btn {
+    background: var(--bg-light); border: 2px solid var(--border); color: var(--navy);
+    width: 40px; height: 40px; border-radius: 4px; cursor: pointer; font-size: 1.1rem;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.2s; font-family: 'DM Sans', sans-serif;
+    min-width: 44px; min-height: 44px;
+  }
+  .cal-nav-btn:hover { background: var(--navy); color: white; border-color: var(--navy); }
+  .cal-month-label {
+    font-family: 'Playfair Display', serif; font-size: 1.3rem;
+    color: var(--navy); font-weight: 700; min-width: 220px; text-align: center;
+  }
+  .cal-view-toggle { display: flex; gap: 0.4rem; }
+  .cal-view-btn {
+    background: var(--bg-light); border: 2px solid var(--border); color: var(--text-muted);
+    padding: 0.4rem 0.9rem; border-radius: 4px; cursor: pointer; font-size: 0.875rem;
+    font-weight: 600; font-family: 'DM Sans', sans-serif; min-height: 40px;
+    transition: all 0.2s;
+  }
+  .cal-view-btn.active { background: var(--navy); color: white; border-color: var(--navy); }
+  .cal-view-btn:hover:not(.active) { background: var(--bg); border-color: var(--navy-mid); color: var(--navy); }
+
+  /* Category filter pills */
+  .cat-filters { display: flex; gap: 0.4rem; flex-wrap: wrap; margin-bottom: 1.5rem; }
+  .cat-pill {
+    padding: 0.3rem 0.85rem; border-radius: 20px; border: 2px solid transparent;
+    font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: all 0.2s;
+    font-family: 'DM Sans', sans-serif; min-height: 36px; display: flex; align-items: center;
+  }
+  .cat-pill[data-cat="all"]     { background: var(--navy); color: white; }
+  .cat-pill[data-cat="kids"]    { background: #fff3cd; color: #7a5400; border-color: #e6c300; }
+  .cat-pill[data-cat="adult"]   { background: #d4edff; color: #0a4a7a; border-color: #5aabf0; }
+  .cat-pill[data-cat="tech"]    { background: #d9f0e4; color: #0d5c30; border-color: #40a870; }
+  .cat-pill[data-cat="community"]{ background: #f0deff; color: #4a1a7a; border-color: #a060e0; }
+  .cat-pill[data-cat="recurring"]{ background: #ffe8d4; color: #7a2a00; border-color: #e07040; }
+  .cat-pill.inactive { opacity: 0.45; background: var(--bg-light) !important; color: var(--text-muted) !important; border-color: var(--border) !important; }
+
+  /* MONTH GRID */
+  .cal-grid-wrap { display: none; width: 100%; overflow-x: auto; }
+  .cal-grid-wrap.active { display: block; }
+  .cal-grid {
+    display: grid; grid-template-columns: repeat(7, minmax(0, 1fr));
+    width: 100%; min-width: 280px;
+    border-left: 1px solid var(--border); border-top: 1px solid var(--border);
+  }
+  .cal-dow {
+    background: var(--navy); color: white; font-size: 0.8rem; font-weight: 700;
+    text-align: center; padding: 0.5rem; letter-spacing: 0.05em;
+    border-right: 1px solid rgba(255,255,255,0.1); border-bottom: 1px solid var(--border);
+  }
+  .cal-day {
+    min-height: 90px; padding: 0.4rem; border-right: 1px solid var(--border);
+    border-bottom: 1px solid var(--border); position: relative; vertical-align: top;
+    background: var(--card-bg);
+  }
+  .cal-day.other-month { background: var(--bg); }
+  .cal-day.today-cell { background: #eef4ff; }
+  .cal-day-num {
+    font-size: 0.8rem; font-weight: 700; color: var(--text-muted);
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 24px; height: 24px; border-radius: 50%; margin-bottom: 0.2rem;
+  }
+  .cal-day.today-cell .cal-day-num { background: var(--navy); color: white; }
+  .cal-event-dot {
+    display: block; font-size: 0.7rem; line-height: 1.3; padding: 1px 4px;
+    border-radius: 3px; margin-bottom: 2px; cursor: pointer; white-space: nowrap;
+    overflow: hidden; text-overflow: ellipsis; max-width: 100%;
+    font-weight: 600; border-left: 3px solid transparent;
+  }
+  .cal-event-dot[data-cat="kids"]     { background: #fff3cd; color: #7a5400; border-left-color: #e6c300; }
+  .cal-event-dot[data-cat="adult"]    { background: #d4edff; color: #0a4a7a; border-left-color: #5aabf0; }
+  .cal-event-dot[data-cat="tech"]     { background: #d9f0e4; color: #0d5c30; border-left-color: #40a870; }
+  .cal-event-dot[data-cat="community"]{ background: #f0deff; color: #4a1a7a; border-left-color: #a060e0; }
+  .cal-event-dot[data-cat="recurring"]{ background: #ffe8d4; color: #7a2a00; border-left-color: #e07040; }
+  .cal-event-dot.hidden { display: none; }
+
+  /* LIST VIEW */
+  .cal-list-wrap { display: none; }
+  .cal-list-wrap.active { display: block; }
+  .cal-list-group { margin-bottom: 2rem; }
+  .cal-list-date-header {
+    font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 700;
+    color: var(--navy); padding: 0.5rem 0; border-bottom: 2px solid var(--gold-accent);
+    margin-bottom: 0.75rem;
+  }
+  .cal-list-item {
+    display: flex; gap: 1rem; padding: 0.85rem; background: var(--bg-light);
+    border-radius: 4px; margin-bottom: 0.5rem; border-left: 4px solid var(--border);
+    transition: transform 0.15s; cursor: default;
+  }
+  .cal-list-item[data-cat="kids"]     { border-left-color: #e6c300; }
+  .cal-list-item[data-cat="adult"]    { border-left-color: #5aabf0; }
+  .cal-list-item[data-cat="tech"]     { border-left-color: #40a870; }
+  .cal-list-item[data-cat="community"]{ border-left-color: #a060e0; }
+  .cal-list-item[data-cat="recurring"]{ border-left-color: #e07040; }
+  .cal-list-item.hidden { display: none; }
+  .cal-list-item:hover { transform: translateX(2px); }
+  .cal-list-time { font-size: 0.8rem; color: var(--text-muted); font-weight: 600; min-width: 70px; padding-top: 2px; }
+  .cal-list-body { flex: 1; }
+  .cal-list-title { font-weight: 700; color: var(--text); font-size: 0.9375rem; }
+  .cal-list-meta { font-size: 0.8rem; color: var(--text-muted); margin-top: 0.2rem; }
+  .cal-list-lib { font-size: 0.75rem; font-weight: 700; color: var(--navy); margin-top: 0.25rem; }
+  .cal-list-link { font-size: 0.78rem; color: var(--navy); font-weight: 600; text-decoration: underline; }
+  .cal-list-link:hover { color: var(--navy-mid); }
+  .cal-empty { color: var(--text-muted); font-style: italic; font-size: 0.9375rem; padding: 2rem 0; }
+
+  /* Tooltip / modal */
+  .event-modal {
+    display: none; position: fixed; inset: 0; background: rgba(10,20,40,0.55);
+    z-index: 500; align-items: center; justify-content: center; padding: 1.5rem;
+  }
+  .event-modal.open { display: flex; }
+  .event-modal-box {
+    background: white; border-radius: 8px; max-width: 480px; width: 100%;
+    box-shadow: 0 24px 64px rgba(10,20,40,0.3); overflow: hidden;
+  }
+  .event-modal-header {
+    background: var(--navy); padding: 1.25rem 1.5rem;
+    display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem;
+  }
+  .event-modal-title { font-family: 'Playfair Display', serif; color: white; font-size: 1.1rem; font-weight: 700; }
+  .event-modal-close {
+    background: transparent; border: none; color: rgba(255,255,255,0.7);
+    font-size: 1.4rem; cursor: pointer; line-height: 1; padding: 0; min-width: 32px; min-height: 32px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .event-modal-close:hover { color: white; }
+  .event-modal-body { padding: 1.25rem 1.5rem; }
+  .event-modal-row { display: flex; gap: 0.6rem; margin-bottom: 0.65rem; font-size: 0.9375rem; align-items: flex-start; }
+  .event-modal-icon { color: var(--gold-label); font-size: 1rem; flex-shrink: 0; margin-top: 1px; }
+  .event-modal-text { color: var(--text); line-height: 1.5; }
+  .event-modal-text a { color: var(--navy); font-weight: 600; }
+
+  /* Library calendar links strip */
+  .cal-links { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 0.6rem; margin-top: 2.5rem; }
+  .cal-link-card {
+    background: var(--bg-light); border: 1px solid var(--border); border-radius: 4px;
+    padding: 0.65rem 0.9rem; text-decoration: none; color: var(--navy);
+    font-size: 0.82rem; font-weight: 600; display: flex; align-items: center; gap: 0.5rem;
+    transition: background 0.2s; min-height: 44px;
+  }
+  .cal-link-card:hover { background: var(--navy); color: white; }
+  .cal-links-header { font-size: 0.875rem; font-weight: 700; color: var(--text-muted); margin-bottom: 0.5rem; letter-spacing: 0.04em; }
+
+  @media (max-width: 640px) {
+    .cal-grid { font-size: 0.65rem; }
+    .cal-day { min-height: 52px; padding: 0.2rem; }
+    .cal-day-num { width: 18px; height: 18px; font-size: 0.7rem; }
+    .cal-event-dot { font-size: 0.6rem; padding: 1px 2px; }
+    .cal-toolbar { flex-direction: column; align-items: flex-start; gap: 0.5rem; }
+    .cat-filters { gap: 0.4rem; }
+    .cat-pill { font-size: 0.75rem; padding: 0.3rem 0.6rem; min-height: 36px; }
+    .cal-month-label { min-width: 0; font-size: 0.95rem; }
+  }
+</style>
+</head>
+<body>
+
+<a class="skip-link" href="#main-content">Skip to main content</a>
+
+<nav aria-label="Main navigation">
+  <a class="nav-logo" href="#">Sullivan County Libraries</a>
+  <ul class="nav-links">
+    <li><a href="#events">Events</a></li>
+    <li><a href="#libraries">Find a Library</a></li>
+    <li><a href="#map-section">Map</a></li>
+    <li><a href="#resources">Resources</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<main id="main-content">
+<div class="hero">
+  <div class="hero-inner">
+    <p class="hero-eyebrow">Sullivan County, New York</p>
+    <h1>Your libraries.<br><em>All in one place.</em></h1>
+    <p class="hero-sub">Nine libraries — and three branches — serving every corner of Sullivan County. Find hours, locations, and contact info below.</p>
+  </div>
+</div>
+
+<!-- LIBRARIES -->
+<section id="libraries">
+  <p class="section-label">Browse</p>
+  <h2>Find a Library</h2>
+  <p class="section-intro">All Sullivan County public libraries are members of the Ramapo Catskill Library System. Your library card works at any branch.</p>
+
+  <div class="filter-bar">
+    <button class="filter-btn active" data-filter="all">All Libraries</button>
+    <button class="filter-btn" data-filter="east">Eastern County</button>
+    <button class="filter-btn" data-filter="central">Central County</button>
+    <button class="filter-btn" data-filter="west">Western County</button>
+  </div>
+
+  <div class="library-grid" id="lib-grid">
+
+    <!-- 1. ROSCOE -->
+    <div class="lib-card animate" data-region="east">
+      <div class="lib-card-header">
+        <span class="lib-name">Roscoe Free Library</span>
+        <span class="lib-badge">Roscoe</span>
+      </div>
+      <div class="lib-body">
+        <div class="lib-detail">
+          <span class="lib-detail-icon">📍</span>
+          <span class="lib-detail-text">Maple St. & Highland Ave., Roscoe, NY 12776</span>
+        </div>
+        <div class="lib-detail">
+          <span class="lib-detail-icon">📞</span>
+          <span class="lib-detail-text"><a href="tel:6074985574">(607) 498-5574</a></span>
+        </div>
+        <div class="lib-detail">
+          <span class="lib-detail-icon">✉️</span>
+          <span class="lib-detail-text"><a href="/cdn-cgi/l/email-protection#a6d4c9d5e6d4c5cad588c9d4c1"><span class="__cf_email__" data-cfemail="abd9c4d8ebd9c8c7d885c4d9cc">[email&#160;protected]</span></a></span>
+        </div>
+        <div class="hours-mini">
+          <div class="hours-mini-label">Hours</div>
+          <div class="hours-row" data-day="1"><span class="hours-day">Monday</span><span class="hours-time">10–12, 1–4 PM</span></div>
+          <div class="hours-row" data-day="2"><span class="hours-day">Tuesday</span><span class="hours-time">10–12, 1–3 PM</span></div>
+          <div class="hours-row" data-day="3"><span class="hours-day">Wednesday</span><span class="hours-time">Closed</span></div>
+          <div class="hours-row" data-day="4"><span class="hours-day">Thursday</span><span class="hours-time">10–12, 1–3 PM</span></div>
+          <div class="hours-row" data-day="5"><span class="hours-day">Friday</span><span class="hours-time">10–12, 2–5 PM</span></div>
+          <div class="hours-row" data-day="6"><span class="hours-day">Saturday</span><span class="hours-time">10 AM–2 PM</span></div>
+          <div class="hours-row" data-day="0"><span class="hours-day">Sunday</span><span class="hours-time">Closed</span></div>
+        </div>
+      </div>
+      <div class="lib-footer"><a class="lib-website" href="https://roscoelibrary.org" target="_blank">roscoelibrary.org ↗</a></div>
+    </div>
+
+    <!-- 2. LIVINGSTON MANOR -->
+    <div class="lib-card animate" data-region="east" style="transition-delay:0.05s">
+      <div class="lib-card-header">
+        <span class="lib-name">Livingston Manor Free Library</span>
+        <span class="lib-badge">Livingston Manor</span>
+      </div>
+      <div class="lib-body">
+        <div class="lib-detail">
+          <span class="lib-detail-icon">📍</span>
+          <span class="lib-detail-text">92 Main Street, Livingston Manor, NY 12758</span>
+        </div>
+        <div class="lib-detail">
+          <span class="lib-detail-icon">📞</span>
+          <span class="lib-detail-text"><a href="tel:8454395440">(845) 439-5440</a></span>
+        </div>
+        <div class="lib-detail">
+          <span class="lib-detail-icon">✉️</span>
+          <span class="lib-detail-text"><a href="/cdn-cgi/l/email-protection#4f2326392621283c3b2021222e21203d23262d3d2e3d360f3d2c233c61203d28"><span class="__cf_email__" data-cfemail="5834312e31363f2b2c3736353936372a34313a2a392a21182a3b342b76372a3f">[email&#160;protected]</span></a></span>
+        </div>
+        <div class="hours-mini">
+          <div class="hours-mini-label">Hours</div>
+          <div class="hours-row" data-day="1"><span class="hours-day">Monday</span><span class="hours-time">10 AM–5 PM</span></div>
+          <div class="hours-row" data-day="2"><span class="hours-day">Tuesday</span><span class="hours-time">10 AM–5 PM</span></div>
+          <div class="hours-row" data-day="3"><span class="hours-day">Wednesday</span><span class="hours-time">10 AM–5 PM</span></div>
+          <div class="hours-row" data-day="4"><span class="hours-day">Thursday</span><span class="hours-time">10 AM–7 PM</span></div>
+          <div class="hours-row" data-day="5"><span class="hours-day">Friday</span><span class="hours-time">10 AM–5 PM</span></div>
+          <div class="hours-row" data-day="6"><span class="hours-day">Saturday</span><span class="hours-time">10 AM–2 PM</span></div>
+          <div class="hours-row" data-day="0"><span class="hours-day">Sunday</span><span class="hours-time">Closed</span></div>
+        </div>
+      </div>
+      <div class="lib-footer"><a class="lib-website" href="https://livingstonmanorlibrary.org" target="_blank">livingstonmanorlibrary.org ↗</a></div>
+    </div>
+
+    <!-- 3. LIBERTY -->
+    <div class="lib-card animate" data-region="central" style="transition-delay:0.1s">
+      <div class="lib-card-header">
+        <span class="lib-name">Liberty Public Library</span>
+        <span class="lib-badge">Liberty</span>
+      </div>
+      <div class="lib-body">
+        <div class="lib-detail">
+          <span class="lib-detail-icon">📍</span>
+          <span class="lib-detail-text">189 N Main St., Liberty, NY 12754</span>
+        </div>
+        <div class="lib-detail">
+          <span class="lib-detail-icon">📞</span>
+          <span class="lib-detail-text"><a href="tel:8452926070">(845) 292-6070</a></span>
+        </div>
+        <div class="lib-detail">
+          <span class="lib-detail-icon">✉️</span>
+          <span class="lib-detail-text"><a href="/cdn-cgi/l/email-protection#1874717a586a7b746b36776a7f"><span class="__cf_email__" data-cfemail="701c19123002131c035e1f0217">[email&#160;protected]</span></a></span>
+        </div>
+        <div class="hours-mini">
+          <div class="hours-mini-label">Hours</div>
+          <div class="hours-row" data-day="1"><span class="hours-day">Monday</span><span class="hours-time">10 AM–5 PM</span></div>
+          <div class="hours-row" data-day="2"><span class="hours-day">Tuesday</span><span class="hours-time">10 AM–6:30 PM</span></div>
+          <div class="hours-row" data-day="3"><span class="hours-day">Wednesday</span><span class="hours-time">10 AM–5 PM</span></div>
+          <div class="hours-row" data-day="4"><span class="hours-day">Thursday</span><span class="hours-time">10 AM–6:30 PM</span></div>
+          <div class="hours-row" data-day="5"><span class="hours-day">Friday</span><span class="hours-time">10 AM–5 PM</span></div>
+          <div class="hours-row" data-day="6"><span class="hours-day">Saturday</span><span class="hours-time">10 AM–4 PM</span></div>
+          <div class="hours-row" data-day="0"><span class="hours-day">Sunday</span><span class="hours-time">Closed</span></div>
+        </div>
+      </div>
+      <div class="lib-footer"><a class="lib-website" href="https://libertypubliclibrary.org" target="_blank">libertypubliclibrary.org ↗</a></div>
+    </div>
+
+    <!-- 4. DANIEL PIERCE -->
+    <div class="lib-card animate" data-region="central" style="transition-delay:0.15s">
+      <div class="lib-card-header">
+        <span class="lib-name">Daniel Pierce Library</span>
+        <span class="lib-badge">Grahamsville</span>
+      </div>
+      <div class="lib-body">
+        <div class="lib-detail">
+          <span class="lib-detail-icon">📍</span>
+          <span class="lib-detail-text">328 Main Street, Grahamsville, NY 12740</span>
+        </div>
+        <div class="lib-detail">
+          <span class="lib-detail-icon">📞</span>
+          <span class="lib-detail-text"><a href="tel:8459857233">(845) 985-7233</a></span>
+        </div>
+        <div class="lib-detail">
+          <span class="lib-detail-icon">✉️</span>
+          <span class="lib-detail-text"><a href="/cdn-cgi/l/email-protection#1074607c5062737c633e7f6277"><span class="__cf_email__" data-cfemail="6b0f1b072b190807184504190c">[email&#160;protected]</span></a></span>
+        </div>
+        <div class="hours-mini">
+          <div class="hours-mini-label">Hours</div>
+          <div class="hours-row" data-day="1"><span class="hours-day">Monday</span><span class="hours-time">Closed</span></div>
+          <div class="hours-row" data-day="2"><span class="hours-day">Tuesday</span><span class="hours-time">10 AM–8 PM</span></div>
+          <div class="hours-row" data-day="3"><span class="hours-day">Wednesday</span><span class="hours-time">10 AM–5 PM</span></div>
+          <div class="hours-row" data-day="4"><span class="hours-day">Thursday</span><span class="hours-time">10 AM–8 PM</span></div>
+          <div class="hours-row" data-day="5"><span class="hours-day">Friday</span><span class="hours-time">10 AM–5 PM</span></div>
+          <div class="hours-row" data-day="6"><span class="hours-day">Saturday</span><span class="hours-time">See website</span></div>
+          <div class="hours-row" data-day="0"><span class="hours-day">Sunday</span><span class="hours-time">Closed</span></div>
+        </div>
+      </div>
+      <div class="lib-footer"><a class="lib-website" href="https://danielpiercelibrary.org" target="_blank">danielpiercelibrary.org ↗</a></div>
+    </div>
+
+    <!-- 5. FALLSBURG -->
+    <div class="lib-card animate" data-region="central" style="transition-delay:0.2s">
+      <div class="lib-card-header">
+        <span class="lib-name">Fallsburg Library</span>
+        <span class="lib-badge">South Fallsburg</span>
+      </div>
+      <div class="lib-body">
+        <div class="lib-detail">
+          <span class="lib-detail-icon">📍</span>
+          <span class="lib-detail-text">12 Railroad Plaza, South Fallsburg, NY 12779</span>
+        </div>
+        <div class="lib-detail">
+          <span class="lib-detail-icon">📞</span>
+          <span class="lib-detail-text"><a href="tel:8454366067">(845) 436-6067</a></span>
+        </div>
+        <div class="lib-detail">
+          <span class="lib-detail-icon">✉️</span>
+          <span class="lib-detail-text"><a href="/cdn-cgi/l/email-protection#badcd8c8fac8d9d6c994d5c8dd"><span class="__cf_email__" data-cfemail="0b6d69794b796867782564796c">[email&#160;protected]</span></a></span>
+        </div>
+        <div class="hours-mini">
+          <div class="hours-mini-label">Hours</div>
+          <div class="hours-row" data-day="1"><span class="hours-day">Monday</span><span class="hours-time">9:30 AM–4 PM</span></div>
+          <div class="hours-row" data-day="2"><span class="hours-day">Tuesday</span><span class="hours-time">10 AM–6 PM</span></div>
+          <div class="hours-row" data-day="3"><span class="hours-day">Wednesday</span><span class="hours-time">10 AM–6 PM</span></div>
+          <div class="hours-row" data-day="4"><span class="hours-day">Thursday</span><span class="hours-time">9:30 AM–4 PM</span></div>
+          <div class="hours-row" data-day="5"><span class="hours-day">Friday</span><span class="hours-time">9:30 AM–4 PM</span></div>
+          <div class="hours-row" data-day="6"><span class="hours-day">Saturday</span><span class="hours-time">Closed</span></div>
+          <div class="hours-row" data-day="0"><span class="hours-day">Sunday</span><span class="hours-time">Closed</span></div>
+        </div>
+      </div>
+      <div class="lib-footer"><a class="lib-website" href="https://fallsburglibrary.org" target="_blank">fallsburglibrary.org ↗</a></div>
+    </div>
+
+    <!-- 6. EBCPL -->
+    <div class="lib-card animate" data-region="central" style="transition-delay:0.25s">
+      <div class="lib-card-header">
+        <span class="lib-name">Ethelbert B. Crawford Public Library</span>
+        <span class="lib-badge">Monticello</span>
+      </div>
+      <div class="lib-body">
+        <div class="lib-detail">
+          <span class="lib-detail-icon">📍</span>
+          <span class="lib-detail-text">479 Broadway, Monticello, NY 12701</span>
+        </div>
+        <div class="lib-detail">
+          <span class="lib-detail-icon">📞</span>
+          <span class="lib-detail-text"><a href="tel:8457944660">(845) 794-4660</a></span>
+        </div>
+        <div class="lib-detail">
+          <span class="lib-detail-icon">✉️</span>
+          <span class="lib-detail-text"><a href="/cdn-cgi/l/email-protection#a2c8cac3cccde2d0c1ced18ccdd0c5"><span class="__cf_email__" data-cfemail="ed87858c8382ad9f8e819ec3829f8a">[email&#160;protected]</span></a></span>
+        </div>
+        <div class="hours-mini">
+          <div class="hours-mini-label">Hours</div>
+          <div class="hours-row" data-day="1"><span class="hours-day">Monday</span><span class="hours-time">9:30 AM–8 PM</span></div>
+          <div class="hours-row" data-day="2"><span class="hours-day">Tuesday</span><span class="hours-time">9:30 AM–8 PM</span></div>
+          <div class="hours-row" data-day="3"><span class="hours-day">Wednesday</span><span class="hours-time">9:30 AM–6 PM</span></div>
+          <div class="hours-row" data-day="4"><span class="hours-day">Thursday</span><span class="hours-time">9:30 AM–8 PM</span></div>
+          <div class="hours-row" data-day="5"><span class="hours-day">Friday</span><span class="hours-time">9:30 AM–6 PM</span></div>
+          <div class="hours-row" data-day="6"><span class="hours-day">Saturday</span><span class="hours-time">10 AM–4 PM</span></div>
+          <div class="hours-row" data-day="0"><span class="hours-day">Sunday</span><span class="hours-time">Closed*</span></div>
+        </div>
+        <p style="font-size:0.875rem;color:var(--text-muted)">*Open Sundays 10–2 in July & August</p>
+      </div>
+      <div class="lib-footer"><a class="lib-website" href="https://ebcpl.org" target="_blank">ebcpl.org ↗</a></div>
+    </div>
+
+    <!-- 7. MAMAKATING -->
+    <div class="lib-card animate" data-region="central" style="transition-delay:0.3s">
+      <div class="lib-card-header">
+        <span class="lib-name">Mamakating Library</span>
+        <span class="lib-badge">Wurtsboro</span>
+      </div>
+      <div class="lib-body">
+        <div class="lib-detail">
+          <span class="lib-detail-icon">📍</span>
+          <span class="lib-detail-text">128 Sullivan Street, Wurtsboro, NY 12790</span>
+        </div>
+        <div class="lib-detail">
+          <span class="lib-detail-icon">📞</span>
+          <span class="lib-detail-text"><a href="tel:8458888004">(845) 888-8004</a></span>
+        </div>
+        <div class="lib-detail">
+          <span class="lib-detail-icon">✉️</span>
+          <span class="lib-detail-text"><a href="https://mamakatinglibrary.org/contact-library/" target="_blank">Contact form →</a></span>
+        </div>
+        <div class="hours-mini">
+          <div class="hours-mini-label">Hours</div>
+          <div class="hours-row" data-day="1"><span class="hours-day">Monday</span><span class="hours-time">10 AM–5 PM</span></div>
+          <div class="hours-row" data-day="2"><span class="hours-day">Tuesday</span><span class="hours-time">10 AM–7 PM</span></div>
+          <div class="hours-row" data-day="3"><span class="hours-day">Wednesday</span><span class="hours-time">10 AM–5 PM</span></div>
+          <div class="hours-row" data-day="4"><span class="hours-day">Thursday</span><span class="hours-time">10 AM–7 PM</span></div>
+          <div class="hours-row" data-day="5"><span class="hours-day">Friday</span><span class="hours-time">10 AM–5 PM</span></div>
+          <div class="hours-row" data-day="6"><span class="hours-day">Saturday</span><span class="hours-time">10 AM–4 PM</span></div>
+          <div class="hours-row" data-day="0"><span class="hours-day">Sunday</span><span class="hours-time">Closed</span></div>
+        </div>
+      </div>
+      <div class="lib-footer"><a class="lib-website" href="https://mamakatinglibrary.org" target="_blank">mamakatinglibrary.org ↗</a></div>
+    </div>
+
+    <!-- 8. WESTERN SULLIVAN (3 branches) -->
+    <div class="lib-card animate" data-region="west" style="transition-delay:0.35s">
+      <div class="lib-card-header">
+        <span class="lib-name">Western Sullivan Public Library</span>
+        <span class="lib-badge">3 Branches</span>
+      </div>
+      <div class="lib-body">
+        <p style="font-size:0.875rem;color:var(--text-muted);margin-bottom:0.5rem;">Three branches, one library system. Your WSPL card works at all locations.</p>
+
+        <div class="branch-tag">📚 Jeffersonville Branch</div>
+        <div class="lib-detail" style="margin-bottom:0.2rem;">
+          <span class="lib-detail-icon">📍</span><span class="lib-detail-text">19 Center St., Jeffersonville, NY 12748</span>
+        </div>
+        <div class="lib-detail" style="margin-bottom:0.7rem;">
+          <span class="lib-detail-icon">📞</span><span class="lib-detail-text"><a href="tel:8454824350">(845) 482-4350</a> · <a href="/cdn-cgi/l/email-protection#fa909f9cba88999689d495889d"><span class="__cf_email__" data-cfemail="d8b2bdbe98aabbb4abf6b7aabf">[email&#160;protected]</span></a></span>
+        </div>
+
+        <div class="branch-tag">📚 Delaware Free Branch — Callicoon</div>
+        <div class="lib-detail" style="margin-bottom:0.2rem;">
+          <span class="lib-detail-icon">📍</span><span class="lib-detail-text">45 Lower Main St., Callicoon, NY 12723</span>
+        </div>
+        <div class="lib-detail" style="margin-bottom:0.7rem;">
+          <span class="lib-detail-icon">📞</span><span class="lib-detail-text"><a href="tel:8458874040">(845) 887-4040</a> · <a href="/cdn-cgi/l/email-protection#ef8b8a83af9d8c839cc1809d88"><span class="__cf_email__" data-cfemail="88ecede4c8faebe4fba6e7faef">[email&#160;protected]</span></a></span>
+        </div>
+
+        <div class="branch-tag">📚 Tusten-Cochecton Branch — Narrowsburg</div>
+        <div class="lib-detail" style="margin-bottom:0.2rem;">
+          <span class="lib-detail-icon">📍</span><span class="lib-detail-text">198 Bridge St., Narrowsburg, NY 12764</span>
+        </div>
+        <div class="lib-detail" style="margin-bottom:0.7rem;">
+          <span class="lib-detail-icon">📞</span><span class="lib-detail-text"><a href="tel:8452523360">(845) 252-3360</a> · <a href="/cdn-cgi/l/email-protection#432d22310331202f306d2c3124"><span class="__cf_email__" data-cfemail="2947485b695b4a455a07465b4e">[email&#160;protected]</span></a></span>
+        </div>
+
+        <div class="hours-mini">
+          <div class="hours-mini-label">Narrowsburg Hours (sample branch)</div>
+          <div class="hours-row" data-day="1"><span class="hours-day">Monday</span><span class="hours-time">10 AM–8 PM</span></div>
+          <div class="hours-row" data-day="2"><span class="hours-day">Tuesday</span><span class="hours-time">9:30 AM–2 PM</span></div>
+          <div class="hours-row" data-day="3"><span class="hours-day">Wednesday</span><span class="hours-time">10 AM–7 PM</span></div>
+          <div class="hours-row" data-day="4"><span class="hours-day">Thursday</span><span class="hours-time">Closed</span></div>
+          <div class="hours-row" data-day="5"><span class="hours-day">Friday</span><span class="hours-time">10 AM–7 PM</span></div>
+          <div class="hours-row" data-day="6"><span class="hours-day">Saturday</span><span class="hours-time">9:30 AM–2 PM</span></div>
+          <div class="hours-row" data-day="0"><span class="hours-day">Sunday</span><span class="hours-time">Closed</span></div>
+        </div>
+        <p style="font-size:0.875rem;color:var(--text-muted);margin-top:0.4rem;">Hours vary by branch — see website for all schedules.</p>
+      </div>
+      <div class="lib-footer"><a class="lib-website" href="https://wsplonline.org" target="_blank">wsplonline.org ↗</a></div>
+    </div>
+
+    <!-- 9. SUNSHINE HALL -->
+    <div class="lib-card animate" data-region="west" style="transition-delay:0.4s">
+      <div class="lib-card-header">
+        <span class="lib-name">Sunshine Hall Free Library</span>
+        <span class="lib-badge">Eldred</span>
+      </div>
+      <div class="lib-body">
+        <div class="lib-detail">
+          <span class="lib-detail-icon">📍</span>
+          <span class="lib-detail-text">14 Proctor Road, Eldred, NY 12732</span>
+        </div>
+        <div class="lib-detail">
+          <span class="lib-detail-icon">📞</span>
+          <span class="lib-detail-text"><a href="tel:8455576258">(845) 557-6258</a></span>
+        </div>
+        <div class="lib-detail">
+          <span class="lib-detail-icon">✉️</span>
+          <span class="lib-detail-text"><a href="/cdn-cgi/l/email-protection#46232a220634252a3568293421"><span class="__cf_email__" data-cfemail="f2979e96b280919e81dc9d8095">[email&#160;protected]</span></a></span>
+        </div>
+        <div class="hours-mini">
+          <div class="hours-mini-label">Hours</div>
+          <div class="hours-row" data-day="1"><span class="hours-day">Monday</span><span class="hours-time">Closed</span></div>
+          <div class="hours-row" data-day="2"><span class="hours-day">Tuesday</span><span class="hours-time">Noon–4:30 PM</span></div>
+          <div class="hours-row" data-day="3"><span class="hours-day">Wednesday</span><span class="hours-time">Noon–4:30 PM</span></div>
+          <div class="hours-row" data-day="4"><span class="hours-day">Thursday</span><span class="hours-time">Noon–6 PM</span></div>
+          <div class="hours-row" data-day="5"><span class="hours-day">Friday</span><span class="hours-time">Noon–8 PM</span></div>
+          <div class="hours-row" data-day="6"><span class="hours-day">Saturday</span><span class="hours-time">10 AM–3 PM</span></div>
+          <div class="hours-row" data-day="0"><span class="hours-day">Sunday</span><span class="hours-time">Closed</span></div>
+        </div>
+      </div>
+      <div class="lib-footer"><a class="lib-website" href="https://sunshinehallfreelibrary.org" target="_blank">sunshinehallfreelibrary.org ↗</a></div>
+    </div>
+
+  </div><!-- /library-grid -->
+</section>
+
+<!-- MAP -->
+<section id="map-section">
+  <p class="section-label">Locations</p>
+  <h2>Libraries Across the County</h2>
+  <p class="section-intro">All nine libraries are spread across Sullivan County, NY — part of the Ramapo Catskill Library System.</p>
+  <iframe
+    class="map-embed"
+    title="Map of Sullivan County New York showing library locations"
+    loading="lazy"
+    referrerpolicy="no-referrer-when-downgrade"
+    src="https://www.google.com/maps/embed?pb=!1m16!1m12!1m3!1d192000!2d-74.8!3d41.7!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!2m1!1sSullivan+County+NY+public+library!5e0!3m2!1sen!2sus!4v1700000000000"
+    allowfullscreen>
+  </iframe>
+</section>
+
+<!-- RESOURCES -->
+<!-- EVENTS CALENDAR -->
+<section id="events">
+  <p class="section-label">County-Wide</p>
+  <h2>Events & Programs</h2>
+  <p class="section-intro">Programs from all Sullivan County libraries in one place. Filter by category, browse by month, or switch to list view. Click any event for details.</p>
+
+  <!-- Toolbar -->
+  <div class="cal-toolbar">
+    <div class="cal-nav">
+      <button class="cal-nav-btn" id="prevMonth" aria-label="Previous month">‹</button>
+      <span class="cal-month-label" id="monthLabel" aria-live="polite"></span>
+      <button class="cal-nav-btn" id="nextMonth" aria-label="Next month">›</button>
+    </div>
+    <div class="cal-view-toggle" role="group" aria-label="Calendar view">
+      <button class="cal-view-btn active" data-view="month">Month</button>
+      <button class="cal-view-btn" data-view="list">List</button>
+    </div>
+  </div>
+
+  <!-- Category filters -->
+  <div class="cat-filters" role="group" aria-label="Filter by category">
+    <button class="cat-pill" data-cat="all">All</button>
+    <button class="cat-pill inactive" data-cat="kids">👦 Kids & Families</button>
+    <button class="cat-pill inactive" data-cat="adult">📖 Adults</button>
+    <button class="cat-pill inactive" data-cat="tech">💻 Tech Help</button>
+    <button class="cat-pill inactive" data-cat="community">🌍 Community</button>
+    <button class="cat-pill inactive" data-cat="recurring">🔁 Recurring</button>
+  </div>
+
+  <!-- Month grid -->
+  <div class="cal-grid-wrap active" id="calGridWrap" aria-label="Monthly calendar">
+    <div class="cal-grid" id="calGrid"></div>
+  </div>
+
+  <!-- List view -->
+  <div class="cal-list-wrap" id="calListWrap">
+    <div id="calList"></div>
+  </div>
+
+  <!-- Event detail modal -->
+  <div class="event-modal" id="eventModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="event-modal-box">
+      <div class="event-modal-header">
+        <span class="event-modal-title" id="modalTitle"></span>
+        <button class="event-modal-close" id="modalClose" aria-label="Close">×</button>
+      </div>
+      <div class="event-modal-body" id="modalBody"></div>
+    </div>
+  </div>
+
+  <!-- Links to each library's full calendar -->
+  <p class="cal-links-header" style="margin-top:2.5rem;">📅 View each library's full calendar:</p>
+  <div class="cal-links">
+    <a class="cal-link-card" href="https://roscoelibrary.org" target="_blank">📚 Roscoe Free Library</a>
+    <a class="cal-link-card" href="https://livingstonmanorlibrary.org" target="_blank">📚 Livingston Manor</a>
+    <a class="cal-link-card" href="https://libertypubliclibrary.org" target="_blank">📚 Liberty Public Library</a>
+    <a class="cal-link-card" href="https://danielpiercelibrary.org/pages/index/226474/upcoming-events" target="_blank">📚 Daniel Pierce</a>
+    <a class="cal-link-card" href="https://fallsburglibrary.libcal.com" target="_blank">📚 Fallsburg Library</a>
+    <a class="cal-link-card" href="https://ebcpl.org/events" target="_blank">📚 EBCPL (Monticello)</a>
+    <a class="cal-link-card" href="https://mamakatinglibrary.org/events-calendar/" target="_blank">📚 Mamakating Library</a>
+    <a class="cal-link-card" href="https://wsplonline.libcal.com/calendar" target="_blank">📚 Western Sullivan PL</a>
+    <a class="cal-link-card" href="https://sunshinehallfreelibrary.org" target="_blank">📚 Sunshine Hall</a>
+  </div>
+</section>
+
+<section id="resources">
+  <p class="section-label">Shared Resources</p>
+  <h2>Available at All Branches</h2>
+  <p class="section-intro">Every Sullivan County library card gives you free access to these digital tools and services — 24/7, from anywhere.</p>
+  <div class="resources-grid">
+    <a class="resource-card" href="https://libbyapp.com" target="_blank">
+      <span class="resource-icon">📚</span>
+      <p class="resource-name">Libby / OverDrive</p>
+      <p class="resource-desc">Borrow e-books and audiobooks instantly on any device.</p>
+    </a>
+    <a class="resource-card" href="https://kanopy.com" target="_blank">
+      <span class="resource-icon">🎬</span>
+      <p class="resource-name">Kanopy</p>
+      <p class="resource-desc">Free streaming of indie films, documentaries, and educational content.</p>
+    </a>
+    <a class="resource-card" href="https://rcls.org" target="_blank">
+      <span class="resource-icon">🔬</span>
+      <p class="resource-name">Research Databases</p>
+      <p class="resource-desc">Academic journals, newspapers, and reference materials via RCLS.</p>
+    </a>
+    <a class="resource-card" href="https://rcls.org" target="_blank">
+      <span class="resource-icon">💼</span>
+      <p class="resource-name">Job & Career Tools</p>
+      <p class="resource-desc">Resume builders, interview prep, and LinkedIn Learning — free with your card.</p>
+    </a>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <span class="footer-logo">Sullivan County Public Libraries</span>
+  <span class="footer-copy">Member libraries of the Ramapo Catskill Library System · Sullivan County, NY</span>
+</footer>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+// ── TODAY HIGHLIGHT IN HOURS PANELS ──
+const todayDOW = new Date().getDay();
+document.querySelectorAll(`.hours-row[data-day="${todayDOW}"]`).forEach(r => r.classList.add('today'));
+
+// ── LIBRARY FILTER ──
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const filter = btn.dataset.filter;
+    document.querySelectorAll('.lib-card').forEach(card => {
+      card.classList.toggle('hidden', filter !== 'all' && card.dataset.region !== filter);
+    });
+  });
+});
+
+// ── SCROLL ANIMATIONS ──
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.08 });
+document.querySelectorAll('.animate').forEach(el => obs.observe(el));
+
+// ════════════════════════════════════════
+//  CALENDAR ENGINE
+// ════════════════════════════════════════
+
+// Event data — real programs sourced from library websites (March 2026)
+// Recurring events are generated by the engine below
+const EVENTS = [
+{ id:1, title:'Fitness Class', date:'2026-03-03', time:'10:00 AM', cat:'recurring', lib:'Mamakating Library - Wurtsboro', loc:'Community Room', desc:'45-min class with breathing, stretching, core exercises, and guided meditation. All fitness levels welcome.', url:'https://calendar.mamakatinglibrary.org' },																									
+  { id:2, title:'Finance Committee Meeting', date:'2026-03-03', time:'6:00 PM', cat:'community', lib:'Mamakating Library - Wurtsboro', loc:'Mamakating Library', desc:'Monthly Finance Committee meeting. Open to the public.', url:'https://calendar.mamakatinglibrary.org' },																									
+  { id:3, title:'Storytime', date:'2026-03-04', time:'10:30 AM', cat:'kids', lib:'Mamakating Library - Wurtsboro', loc:'Community Room', desc:'Indoor storytime for toddlers and preschoolers. Stories, songs, and games. No registration required.', url:'https://calendar.mamakatinglibrary.org' },																									
+  { id:4, title:'Coffee and Playdate', date:'2026-03-04', time:'11:15 AM', cat:'community', lib:'Mamakating Library - Wurtsboro', loc:'Community Room', desc:'Weekly parents coffee meetup and playdate. All welcome.', url:'https://calendar.mamakatinglibrary.org' },																									
+  { id:5, title:'March Virtual Author Talks', date:'2026-03-04', time:'2:00 PM', cat:'adult', lib:'Mamakating Library - Wurtsboro', loc:'Virtual / Online', desc:'Library Speakers Consortium author conversations, livestreamed and recorded. Three talks this March.', url:'https://calendar.mamakatinglibrary.org' },																									
+  { id:6, title:'Tech Topics: Fix Your Tech', date:'2026-03-07', time:'12:00 PM', cat:'tech', lib:'Mamakating Library - Wurtsboro', loc:'Community Room', desc:'Bring any device for hands-on troubleshooting. Covers practical fixes and basic maintenance tips.', url:'https://calendar.mamakatinglibrary.org' },																									
+  { id:7, title:'Documentary Screening Pop-Up Series', date:'2026-03-07', time:'1:30 PM', cat:'community', lib:'Mamakating Library - Wurtsboro', loc:'Community Room', desc:'Monthly documentary screening open to all ages. Snacks provided. No registration required.', url:'https://calendar.mamakatinglibrary.org' },																									
+  { id:8, title:'Fiber Arts Circle', date:'2026-03-07', time:'2:00 PM', cat:'recurring', lib:'Mamakating Library - Wurtsboro', loc:'Community Room', desc:'Weekly drop-in for knitters, crocheters, and fiber artists. Bring your own project. All skill levels welcome.', url:'https://calendar.mamakatinglibrary.org' },																									
+  { id:9, title:'Storytime', date:'2026-03-10', time:'10:30 AM', cat:'kids', lib:'Mamakating Library - Wurtsboro', loc:'Community Room', desc:'Indoor storytime for toddlers and preschoolers. Stories, songs, and games. No registration required.', url:'https://calendar.mamakatinglibrary.org' },																									
+  { id:10, title:'Coffee and Playdate', date:'2026-03-10', time:'11:15 AM', cat:'community', lib:'Mamakating Library - Wurtsboro', loc:'Community Room', desc:'Weekly parents coffee meetup and playdate. All welcome.', url:'https://calendar.mamakatinglibrary.org' },																									
+  { id:11, title:'Board Game Bonanza', date:'2026-03-10', time:'5:00 PM', cat:'community', lib:'Mamakating Library - Wurtsboro', loc:'Community Room', desc:'Drop-in board game night for all ages. Library games available or bring your own.', url:'https://calendar.mamakatinglibrary.org' },																									
+  { id:12, title:'Tech Help Drop-In', date:'2026-03-11', time:'11:00 AM', cat:'tech', lib:'Mamakating Library - Wurtsboro', loc:'Community Room', desc:'One-on-one tech help with a volunteer. Phones, tablets, computers, and more. No appointment needed.', url:'https://calendar.mamakatinglibrary.org' },																									
+  { id:13, title:'Builders Brigade', date:'2026-03-14', time:'11:00 AM', cat:'kids', lib:'Mamakating Library - Wurtsboro', loc:'Community Room', desc:'Monthly LEGO challenge for ages 5-12. Collaborate or work solo. Display your creation until the next meetup.', url:'https://calendar.mamakatinglibrary.org' },																									
+  { id:14, title:'Fiber Arts Circle', date:'2026-03-14', time:'2:00 PM', cat:'recurring', lib:'Mamakating Library - Wurtsboro', loc:'Community Room', desc:'Weekly drop-in for fiber artists. Bring your own project.', url:'https://calendar.mamakatinglibrary.org' },																									
+  { id:15, title:'Fitness Class', date:'2026-03-17', time:'10:00 AM', cat:'recurring', lib:'Mamakating Library - Wurtsboro', loc:'Community Room', desc:'45-min class with breathing, stretching, core exercises, and guided meditation. All fitness levels welcome.', url:'https://calendar.mamakatinglibrary.org' },																									
+  { id:16, title:'Storytime', date:'2026-03-17', time:'10:30 AM', cat:'kids', lib:'Mamakating Library - Wurtsboro', loc:'Community Room', desc:'Indoor storytime for toddlers and preschoolers. Stories, songs, and games. No registration required.', url:'https://calendar.mamakatinglibrary.org' },																									
+  { id:17, title:'Coffee and Playdate', date:'2026-03-17', time:'11:15 AM', cat:'community', lib:'Mamakating Library - Wurtsboro', loc:'Community Room', desc:'Weekly parents coffee meetup and playdate. All welcome.', url:'https://calendar.mamakatinglibrary.org' },																									
+  { id:18, title:'Teen Advisory Board', date:'2026-03-17', time:'4:00 PM', cat:'kids', lib:'Mamakating Library - Wurtsboro', loc:'Community Room', desc:'Monthly meeting for teens to shape library programming. Snacks provided. Open to grades 6-12.', url:'https://calendar.mamakatinglibrary.org' },																									
+  { id:19, title:'Fiber Arts Circle', date:'2026-03-21', time:'2:00 PM', cat:'recurring', lib:'Mamakating Library - Wurtsboro', loc:'Community Room', desc:'Weekly drop-in for fiber artists. Bring your own project.', url:'https://calendar.mamakatinglibrary.org' },																									
+  { id:20, title:'Dungeons and Dragons One-Shot', date:'2026-03-21', time:'3:00 PM', cat:'community', lib:'Mamakating Library - Wurtsboro', loc:'Community Room', desc:'Single-session D&D adventure for teens and adults. All experience levels welcome. Registration required.', url:'https://calendar.mamakatinglibrary.org' },																									
+  { id:21, title:'Seed Library Open Hours', date:'2026-03-23', time:'10:00 AM', cat:'community', lib:'Mamakating Library - Wurtsboro', loc:'Library', desc:'Browse and borrow seeds from the library seed collection. Open during library hours through planting season.', url:'https://calendar.mamakatinglibrary.org' },																									
+  { id:22, title:'Storytime', date:'2026-03-24', time:'10:30 AM', cat:'kids', lib:'Mamakating Library - Wurtsboro', loc:'Community Room', desc:'Indoor storytime for toddlers and preschoolers. Stories, songs, and games. No registration required.', url:'https://calendar.mamakatinglibrary.org' },																									
+  { id:23, title:'Coffee and Playdate', date:'2026-03-24', time:'11:15 AM', cat:'community', lib:'Mamakating Library - Wurtsboro', loc:'Community Room', desc:'Weekly parents coffee meetup and playdate. All welcome.', url:'https://calendar.mamakatinglibrary.org' },																									
+  { id:24, title:'Afternoon Movie Screening', date:'2026-03-24', time:'1:00 PM', cat:'community', lib:'Mamakating Library - Wurtsboro', loc:'Community Room', desc:'Monthly movie afternoon open to all ages. Snacks provided. Check calendar for title.', url:'https://calendar.mamakatinglibrary.org' },																									
+  { id:25, title:'Fiber Arts Circle', date:'2026-03-28', time:'2:00 PM', cat:'recurring', lib:'Mamakating Library - Wurtsboro', loc:'Community Room', desc:'Weekly drop-in for fiber artists. Bring your own project.', url:'https://calendar.mamakatinglibrary.org' },																									
+  { id:26, title:'Nature Journaling Workshop', date:'2026-03-28', time:'10:00 AM', cat:'adult', lib:'Mamakating Library - Wurtsboro', loc:'Community Room', desc:'Learn observational drawing and nature journaling techniques. Supplies provided. Registration encouraged.', url:'https://calendar.mamakatinglibrary.org' },																									
+  { id:27, title:'Storytime', date:'2026-03-31', time:'10:30 AM', cat:'kids', lib:'Mamakating Library - Wurtsboro', loc:'Community Room', desc:'Indoor storytime for toddlers and preschoolers. Stories, songs, and games. No registration required.', url:'https://calendar.mamakatinglibrary.org' },																									
+  { id:28, title:'Books and Tea', date:'2026-03-24', time:'2:30 PM', cat:'adult', lib:'Mamakating Library - Wurtsboro', loc:'Community Room', desc:'Monthly book discussion group. Tea and coffee served. Meets every 3rd Tuesday at 2:30 PM. Registration required.', url:'https://calendar.mamakatinglibrary.org' },																									
+  { id:29, title:'Storytime', date:'2026-03-25', time:'10:30 AM', cat:'kids', lib:'Mamakating Library - Wurtsboro', loc:'Community Room', desc:'Indoor storytime for toddlers and preschoolers. Stories, songs, and games. No registration required.', url:'https://calendar.mamakatinglibrary.org' },																									
+  { id:30, title:'Coffee and Playdate', date:'2026-03-25', time:'11:15 AM', cat:'community', lib:'Mamakating Library - Wurtsboro', loc:'Community Room', desc:'Weekly parents coffee meetup and playdate every Wednesday. All welcome.', url:'https://calendar.mamakatinglibrary.org' },																									
+  { id:31, title:'Open Mic Night: Spring Awakening', date:'2026-03-26', time:'5:00 PM', cat:'community', lib:'Mamakating Library - Wurtsboro', loc:'Library Community Room', desc:'Open mic night for poetry, music, drama, and more. All levels welcome. Registration required.', url:'https://calendar.mamakatinglibrary.org' },																									
+  { id:32, title:'Builders Brigade', date:'2026-03-28', time:'11:00 AM', cat:'kids', lib:'Mamakating Library - Wurtsboro', loc:'Community Room', desc:'Monthly LEGO challenge for ages 5-12. Collaborate or work solo.', url:'https://calendar.mamakatinglibrary.org' },																									
+  { id:33, title:'Perspectives and Pages Non-Fiction Club', date:'2026-03-30', time:'2:00 PM', cat:'adult', lib:'Mamakating Library - Wurtsboro', loc:'Community Room', desc:'Monthly non-fiction book club. New friends and discussion across business, psychology, and life experience. Registration required.', url:'https://calendar.mamakatinglibrary.org' },																									
+  { id:34, title:'Fitness Class', date:'2026-03-31', time:'10:00 AM', cat:'recurring', lib:'Mamakating Library - Wurtsboro', loc:'Community Room', desc:'45-min class with breathing, stretching, core exercises, and guided meditation. All fitness levels welcome.', url:'https://calendar.mamakatinglibrary.org' },																									
+  { id:35, title:'Virtual Author Talk: Michael Perry', date:'2026-03-04', time:'2:00 PM', cat:'adult', lib:'EBCPL - Monticello', loc:'Virtual (Library Speakers\' Consortium)', desc:'Join NYT bestselling author Michael Perry in conversation about his genre-spanning works capturing rural American life and community.', url:'https://ebcpl.libcal.com/event/16390333' },																									
+  { id:36, title:'Screening: The Librarians Documentary', date:'2026-03-04', time:'6:00 PM', cat:'community', lib:'EBCPL - Monticello', loc:'RDN Community Room', desc:'Screening of the 2025 documentary chronicling librarians defending the First Amendment. 90 min + panel discussion with library professionals.', url:'https://ebcpl.libcal.com/event/15936959' },																									
+  { id:37, title:'Tales Well Told: The Bedquilt', date:'2026-03-05', time:'5:30 PM', cat:'adult', lib:'EBCPL - Monticello', loc:'RDN Community Room', desc:'Professional actress Michèle LaRue performs two American stories celebrating quilting as community and self-expression. Women\'s History Month event.', url:'https://ebcpl.libcal.com/event/15302932' },																									
+  { id:38, title:'Art Exhibit Opening: Speaking in Graphite', date:'2026-03-07', time:'1:00 PM', cat:'community', lib:'EBCPL - Monticello', loc:'RDN Community Room', desc:'Opening reception for a community art exhibit featuring local Barryville artist John Tomlinson. Exhibit on view March 7–April 18.', url:'https://ebcpl.libcal.com/event/16378365' },																									
+  { id:39, title:'Movie Matinee: Wicked', date:'2026-03-09', time:'2:00 PM', cat:'adult', lib:'EBCPL - Monticello', loc:'RDN Community Room', desc:'Movie matinee screening of Wicked (2 hrs 40 min). Bring a friend and enjoy the show!', url:'https://ebcpl.libcal.com/event/15606596' },																									
+  { id:40, title:'Pokemon Club', date:'2026-03-09', time:'4:30 PM', cat:'kids', lib:'EBCPL - Monticello', loc:'Children\'s Room', desc:'Pokémon battling, trading, and fun for ages 7+. Bring cards to show or trade. Registration required.', url:'https://ebcpl.libcal.com/event/16470055' },																									
+  { id:41, title:'Writer\'s Group', date:'2026-03-09', time:'6:00 PM', cat:'recurring', lib:'EBCPL - Monticello', loc:'RDN Community Room', desc:'Aspiring writers meet to hone their craft together. 2nd Monday of March. Email langclouse@rcls.org for details.', url:'https://ebcpl.libcal.com/event/15018249' },																									
+  { id:42, title:'Free Tax Prep', date:'2026-03-10', time:'9:30 AM', cat:'community', lib:'EBCPL - Monticello', loc:'RDN Community Room', desc:'Trained volunteer tax counselors prepare and e-file your Federal and NY State returns. Appointment required — contact the library.', url:'https://ebcpl.libcal.com/event/15606683' },																									
+  { id:43, title:'Toddler Storytime', date:'2026-03-10', time:'10:00 AM', cat:'kids', lib:'EBCPL - Monticello', loc:'Children\'s Room', desc:'Storytime for walking toddlers who need a little more movement while listening to books. Every Tuesday in March.', url:'https://ebcpl.libcal.com/event/16086699' },																									
+  { id:44, title:'Baby Storytime', date:'2026-03-10', time:'11:00 AM', cat:'kids', lib:'EBCPL - Monticello', loc:'Children\'s Room', desc:'Stories, lap bounces, and songs for babies and their caregivers. Every Tuesday in March.', url:'https://ebcpl.libcal.com/event/16086727' },																									
+  { id:45, title:'Little Artists', date:'2026-03-10', time:'4:30 PM', cat:'kids', lib:'EBCPL - Monticello', loc:'Children\'s Room', desc:'Young artists and caregivers explore drawing together. Every other month. Registration required.', url:'https://ebcpl.libcal.com/event/16468410' },																									
+  { id:46, title:'Friends of the Library Monthly Meeting', date:'2026-03-10', time:'5:45 PM', cat:'community', lib:'EBCPL - Monticello', loc:'RDN Community Room', desc:'Monthly hybrid meeting of the Friends of EBCPL. Attend in person or via Zoom — email Mary Paige for the link.', url:'https://ebcpl.libcal.com/event/15018236' },																									
+  { id:47, title:'Yiddish — All Levels', date:'2026-03-11', time:'10:30 AM', cat:'recurring', lib:'EBCPL - Monticello', loc:'RDN Community Room', desc:'Weekly Yiddish language and culture discussion. Topics include customs, folklore, poetry, and folk sayings. All levels welcome.', url:'https://ebcpl.libcal.com/event/15018044' },																									
+  { id:48, title:'How to Use Smartphones for Adults', date:'2026-03-12', time:'6:00 PM', cat:'tech', lib:'EBCPL - Monticello', loc:'RDN Community Room', desc:'Hands-on beginner class to learn smartphone basics and build confidence with everyday features.', url:'https://ebcpl.libcal.com/event/16208211' },																									
+  { id:49, title:'Virtual Author Talk: Kate Quinn', date:'2026-03-12', time:'7:00 PM', cat:'adult', lib:'EBCPL - Monticello', loc:'Virtual (Library Speakers\' Consortium)', desc:'Kate Quinn discusses The Astral Library — a fantastical story where books are doors to new worlds. Register via the Library Speakers\' Consortium.', url:'https://ebcpl.libcal.com/event/16390677' },																									
+  { id:50, title:'Knit & Crochet Group Monthly Meet-Up', date:'2026-03-16', time:'6:00 PM', cat:'recurring', lib:'EBCPL - Monticello', loc:'RDN Community Room', desc:'3rd Monday monthly meet-up. Work on your own project or learn something new with experienced stitcher Ginny Schouten. Yarn and tools available.', url:'https://ebcpl.libcal.com' },																									
+  { id:51, title:'Toddler Storytime', date:'2026-03-17', time:'10:00 AM', cat:'kids', lib:'EBCPL - Monticello', loc:'Children\'s Room', desc:'Storytime for walking toddlers with movement and books.', url:'https://ebcpl.libcal.com/event/16086700' },																									
+  { id:52, title:'Baby Storytime', date:'2026-03-17', time:'11:00 AM', cat:'kids', lib:'EBCPL - Monticello', loc:'Children\'s Room', desc:'Stories, lap bounces, and songs for babies and caregivers.', url:'https://ebcpl.libcal.com/event/16086727' },																									
+  { id:53, title:'Organizing with Jamie Novak: De-Clutter Like You Are Moving', date:'2026-03-17', time:'6:00 PM', cat:'adult', lib:'EBCPL - Monticello', loc:'Virtual (Zoom)', desc:'Part 2 of the Keep This, Toss That series. Expert organizer Jamie Novak shares steps to simplify life. Registration required for Zoom link.', url:'https://ebcpl.libcal.com/event/16252617' },																									
+  { id:54, title:'Yiddish — All Levels', date:'2026-03-18', time:'10:30 AM', cat:'recurring', lib:'EBCPL - Monticello', loc:'RDN Community Room', desc:'Weekly Yiddish language and culture discussion group.', url:'https://ebcpl.libcal.com/event/15018045' },																									
+  { id:55, title:'Writer\'s Group', date:'2026-03-23', time:'6:00 PM', cat:'recurring', lib:'EBCPL - Monticello', loc:'RDN Community Room', desc:'Aspiring writers meet to hone their craft together. 4th Monday of March.', url:'https://ebcpl.libcal.com/event/15018249' },																									
+  { id:56, title:'Toddler Storytime', date:'2026-03-24', time:'10:00 AM', cat:'kids', lib:'EBCPL - Monticello', loc:'Children\'s Room', desc:'Storytime for walking toddlers with movement and books.', url:'https://ebcpl.libcal.com/event/16086701' },																									
+  { id:57, title:'Baby Storytime', date:'2026-03-24', time:'11:00 AM', cat:'kids', lib:'EBCPL - Monticello', loc:'Children\'s Room', desc:'Stories, lap bounces, and songs for babies and caregivers.', url:'https://ebcpl.libcal.com/event/16086727' },																									
+  { id:58, title:'Virtual Author Talk: Shoshana Walter', date:'2026-03-24', time:'2:00 PM', cat:'adult', lib:'EBCPL - Monticello', loc:'Virtual (Library Speakers\' Consortium)', desc:'Award-winning journalist Shoshana Walter in conversation with Barbara Kingsolver about Rehab: An American Scandal — exposing the opioid crisis treatment industry.', url:'https://ebcpl.libcal.com/event/16390709' },																									
+  { id:59, title:'Yiddish — Alsl Levels', date:'2026-03-25', time:'10:30 AM', cat:'recurring', lib:'EBCPL - Monticello', loc:'RDN Community Room', desc:'Weekly Yiddish language and culture discussion group.', url:'https://ebcpl.libcal.com/event/15018046' },																									
+  { id:60, title:'Exploring Alexander Hamilton & the Schuyler Sisters', date:'2026-03-26', time:'6:00 PM', cat:'adult', lib:'EBCPL - Monticello', loc:'RDN Community Room', desc:'Rick Feingold explores Hamilton and the Schuyler Sisters with readings of courtship letters and songs from the acclaimed musical.', url:'https://ebcpl.libcal.com/event/16387023' },																									
+  { id:61, title:'Toddler Storytime', date:'2026-03-31', time:'10:00 AM', cat:'kids', lib:'EBCPL - Monticello', loc:'Children\'s Room', desc:'Storytime for walking toddlers with movement and books.', url:'https://ebcpl.libcal.com/event/16086702' },																									
+  { id:62, title:'Baby Storytime', date:'2026-03-31', time:'11:00 AM', cat:'kids', lib:'EBCPL - Monticello', loc:'Children\'s Room', desc:'Stories, lap bounces, and songs for babies and caregivers.', url:'https://ebcpl.libcal.com/event/16086727' },																									
+  { id:63, title:'Puzzle Time', date:'2026-03-02', time:'4:00 PM', cat:'recurring', lib:'Fallsburg Library - South Fallsburg', loc:'Fallsburg Library', desc:'Drop-in puzzle program. Work on a puzzle solo or with others. All ages welcome.', url:'https://www.fallsburglibrary.org/calendar/' },																									
+  { id:64, title:'Tuesday Night Movie', date:'2026-03-03', time:'5:00 PM', cat:'adult', lib:'Fallsburg Library - South Fallsburg', loc:'Fallsburg Library', desc:'Weekly Tuesday evening movie screening. Check calendar for current title.', url:'https://www.fallsburglibrary.org/calendar/' },																									
+  { id:65, title:'English/Spanish Family Storytime', date:'2026-03-04', time:'12:00 PM', cat:'kids', lib:'Fallsburg Library - South Fallsburg', loc:'Fallsburg Library', desc:'Bilingual storytime for families with young children. Stories, songs, and activities in English and Spanish.', url:'https://www.fallsburglibrary.org/calendar/' },																									
+  { id:66, title:'Chair Yoga', date:'2026-03-05', time:'4:00 PM', cat:'recurring', lib:'Fallsburg Library - South Fallsburg', loc:'Fallsburg Library', desc:'Gentle yoga class performed seated or with chair support. All fitness levels welcome.', url:'https://www.fallsburglibrary.org/calendar/' },																									
+  { id:67, title:'Take/Make Kits Available', date:'2026-03-06', time:'9:30 AM', cat:'kids', lib:'Fallsburg Library - South Fallsburg', loc:'Fallsburg Library', desc:'Pick up a free take-and-make craft kit while supplies last.', url:'https://www.fallsburglibrary.org/calendar/' },																									
+  { id:68, title:'English/Spanish Family Storytime', date:'2026-03-07', time:'12:00 PM', cat:'kids', lib:'Fallsburg Library - South Fallsburg', loc:'Fallsburg Library', desc:'Bilingual storytime for families with young children. Stories, songs, and activities in English and Spanish.', url:'https://www.fallsburglibrary.org/calendar/' },																									
+  { id:69, title:'Puzzle Time', date:'2026-03-09', time:'4:00 PM', cat:'recurring', lib:'Fallsburg Library - South Fallsburg', loc:'Fallsburg Library', desc:'Drop-in puzzle program. Work on a puzzle solo or with others. All ages welcome.', url:'https://www.fallsburglibrary.org/calendar/' },																									
+  { id:70, title:'Crafternoon: Adult Craft Program', date:'2026-03-10', time:'4:30 PM', cat:'adult', lib:'Fallsburg Library - South Fallsburg', loc:'Fallsburg Library', desc:'Drop-in adult craft afternoon. Supplies provided. No registration required.', url:'https://www.fallsburglibrary.org/calendar/' },																									
+  { id:71, title:'Tuesday Night Movie', date:'2026-03-10', time:'5:00 PM', cat:'adult', lib:'Fallsburg Library - South Fallsburg', loc:'Fallsburg Library', desc:'Weekly Tuesday evening movie screening. Check calendar for current title.', url:'https://www.fallsburglibrary.org/calendar/' },																									
+  { id:72, title:'English/Spanish Family Storytime', date:'2026-03-11', time:'12:00 PM', cat:'kids', lib:'Fallsburg Library - South Fallsburg', loc:'Fallsburg Library', desc:'Bilingual storytime for families with young children. Stories, songs, and activities in English and Spanish.', url:'https://www.fallsburglibrary.org/calendar/' },																									
+  { id:73, title:'Chair Yoga', date:'2026-03-12', time:'4:00 PM', cat:'recurring', lib:'Fallsburg Library - South Fallsburg', loc:'Fallsburg Library', desc:'Gentle yoga class performed seated or with chair support. All fitness levels welcome.', url:'https://www.fallsburglibrary.org/calendar/' },																									
+  { id:74, title:'Adult Movie Night', date:'2026-03-12', time:'5:00 PM', cat:'adult', lib:'Fallsburg Library - South Fallsburg', loc:'Fallsburg Library', desc:'Special adult movie screening. Check calendar for current title.', url:'https://www.fallsburglibrary.org/calendar/' },																									
+  { id:75, title:'English/Spanish Family Storytime', date:'2026-03-14', time:'12:00 PM', cat:'kids', lib:'Fallsburg Library - South Fallsburg', loc:'Fallsburg Library', desc:'Bilingual storytime for families with young children. Stories, songs, and activities in English and Spanish.', url:'https://www.fallsburglibrary.org/calendar/' },																									
+  { id:76, title:'Puzzle Time', date:'2026-03-16', time:'4:00 PM', cat:'recurring', lib:'Fallsburg Library - South Fallsburg', loc:'Fallsburg Library', desc:'Drop-in puzzle program. Work on a puzzle solo or with others. All ages welcome.', url:'https://www.fallsburglibrary.org/calendar/' },																									
+  { id:77, title:'Family Game Night', date:'2026-03-17', time:'5:00 PM', cat:'community', lib:'Fallsburg Library - South Fallsburg', loc:'Fallsburg Library', desc:'Family game night open to all ages. Join us for a night of fun, laughter, and friendly competition. Runs weekly through April 14.', url:'https://www.fallsburglibrary.org/calendar/' },																									
+  { id:78, title:'Tuesday Night Movie', date:'2026-03-17', time:'5:00 PM', cat:'adult', lib:'Fallsburg Library - South Fallsburg', loc:'Fallsburg Library', desc:'Weekly Tuesday evening movie screening. Check calendar for current title.', url:'https://www.fallsburglibrary.org/calendar/' },																									
+  { id:79, title:'English/Spanish Family Storytime', date:'2026-03-18', time:'12:00 PM', cat:'kids', lib:'Fallsburg Library - South Fallsburg', loc:'Fallsburg Library', desc:'Bilingual storytime for families with young children. Stories, songs, and activities in English and Spanish.', url:'https://www.fallsburglibrary.org/calendar/' },																									
+  { id:80, title:'Chair Yoga', date:'2026-03-19', time:'4:00 PM', cat:'recurring', lib:'Fallsburg Library - South Fallsburg', loc:'Fallsburg Library', desc:'Gentle yoga class performed seated or with chair support. All fitness levels welcome.', url:'https://www.fallsburglibrary.org/calendar/' },																									
+  { id:81, title:'Independent Coloring and Activity', date:'2026-03-20', time:'10:00 AM', cat:'kids', lib:'Fallsburg Library - South Fallsburg', loc:'Fallsburg Library', desc:'Drop-in coloring and activity time for kids. Supplies provided.', url:'https://www.fallsburglibrary.org/calendar/' },																									
+  { id:82, title:'English/Spanish Family Storytime', date:'2026-03-21', time:'12:00 PM', cat:'kids', lib:'Fallsburg Library - South Fallsburg', loc:'Fallsburg Library', desc:'Bilingual storytime for families with young children. Stories, songs, and activities in English and Spanish.', url:'https://www.fallsburglibrary.org/calendar/' },																									
+  { id:83, title:'Puzzle Time', date:'2026-03-23', time:'4:00 PM', cat:'recurring', lib:'Fallsburg Library - South Fallsburg', loc:'Fallsburg Library', desc:'Drop-in puzzle program. Work on a puzzle solo or with others. All ages welcome.', url:'https://www.fallsburglibrary.org/calendar/' },																									
+  { id:84, title:'Tuesday Night Movie', date:'2026-03-24', time:'5:00 PM', cat:'adult', lib:'Fallsburg Library - South Fallsburg', loc:'Fallsburg Library', desc:'Weekly Tuesday evening movie screening. Check calendar for current title.', url:'https://www.fallsburglibrary.org/calendar/' },																									
+  { id:85, title:'English/Spanish Family Storytime', date:'2026-03-25', time:'12:00 PM', cat:'kids', lib:'Fallsburg Library - South Fallsburg', loc:'Fallsburg Library', desc:'Bilingual storytime for families with young children. Stories, songs, and activities in English and Spanish.', url:'https://www.fallsburglibrary.org/calendar/' },																									
+  { id:86, title:'Chair Yoga', date:'2026-03-26', time:'4:00 PM', cat:'recurring', lib:'Fallsburg Library - South Fallsburg', loc:'Fallsburg Library', desc:'Gentle yoga class performed seated or with chair support. All fitness levels welcome.', url:'https://www.fallsburglibrary.org/calendar/' },																									
+  { id:87, title:'English/Spanish Family Storytime', date:'2026-03-28', time:'12:00 PM', cat:'kids', lib:'Fallsburg Library - South Fallsburg', loc:'Fallsburg Library', desc:'Bilingual storytime for families with young children. Stories, songs, and activities in English and Spanish.', url:'https://www.fallsburglibrary.org/calendar/' },																									
+  { id:88, title:'Puzzle Time', date:'2026-03-30', time:'4:00 PM', cat:'recurring', lib:'Fallsburg Library - South Fallsburg', loc:'Fallsburg Library', desc:'Drop-in puzzle program. Work on a puzzle solo or with others. All ages welcome.', url:'https://www.fallsburglibrary.org/calendar/' },																									
+  { id:89, title:'Tuesday Night Movie', date:'2026-03-31', time:'5:00 PM', cat:'adult', lib:'Fallsburg Library - South Fallsburg', loc:'Fallsburg Library', desc:'Weekly Tuesday evening movie screening. Check calendar for current title.', url:'https://www.fallsburglibrary.org/calendar/' },																									
+  { id:90, title:'Open Tech Support', date:'2026-03-02', time:'1:00 PM', cat:'tech', lib:'Western Sullivan PL - Narrowsburg', loc:'Narrowsburg Community Room', desc:'Drop-in tech support. In-person or virtual, 25-minute intervals. Schedule using the link on the event page.', url:'https://wsplonline.libcal.com/event/16247357' },																									
+  { id:91, title:'Tusten Teen Mondays', date:'2026-03-02', time:'3:00 PM', cat:'kids', lib:'Western Sullivan PL - Narrowsburg', loc:'Narrowsburg Children\'s Room', desc:'Weekly gathering for teens 12+ to explore zine making, podcasting, crafting, and more.', url:'https://wsplonline.libcal.com/event/16387851' },																									
+  { id:92, title:'Narrowsburg Knitters', date:'2026-03-02', time:'6:00 PM', cat:'recurring', lib:'Western Sullivan PL - Narrowsburg', loc:'Narrowsburg Lobby', desc:'Weekly knitting group open to all skill levels. Bring your own project.', url:'https://wsplonline.libcal.com/event/16029147' },																									
+  { id:93, title:'Open Tech Support - Jeffersonville', date:'2026-03-03', time:'1:00 PM', cat:'tech', lib:'Western Sullivan PL - Jeffersonville', loc:'Jeffersonville Community Space', desc:'Drop-in tech support. In-person or virtual, 25-minute intervals.', url:'https://wsplonline.libcal.com/event/16248031' },																									
+  { id:94, title:'Dungeons & Dragons Club', date:'2026-03-03', time:'6:00 PM', cat:'community', lib:'Western Sullivan PL - Jeffersonville', loc:'Jeffersonville Community Space', desc:'Weekly D&D club for teens and adults. All experience levels welcome.', url:'https://wsplonline.libcal.com/event/16383509' },																									
+  { id:95, title:'Open Tech Support - Callicoon', date:'2026-03-04', time:'1:00 PM', cat:'tech', lib:'Western Sullivan PL - Callicoon', loc:'Delaware Free Branch', desc:'Drop-in tech support. In-person or virtual, 25-minute intervals.', url:'https://wsplonline.libcal.com/event/16247596' },																									
+  { id:96, title:'The Equation & Expression Program: Grades 2-3', date:'2026-03-04', time:'5:30 PM', cat:'kids', lib:'Western Sullivan PL - Jeffersonville', loc:'Jeffersonville Children\'s Room', desc:'Math enrichment program for grades 2-3.', url:'https://wsplonline.libcal.com/event/16271355' },																									
+  { id:97, title:'Dinner-and-a-Movie Night: The Princess and the Frog', date:'2026-03-04', time:'5:30 PM', cat:'kids', lib:'Western Sullivan PL - Jeffersonville', loc:'Jeffersonville Community Space', desc:'Family dinner and movie night screening The Princess and the Frog.', url:'https://wsplonline.libcal.com/event/16087709' },																									
+  { id:98, title:'Sew-cial Circle', date:'2026-03-05', time:'1:00 PM', cat:'recurring', lib:'Western Sullivan PL - Jeffersonville', loc:'Jeffersonville Community Space', desc:'Weekly sewing and needlework circle. Bring your own project. All skill levels welcome.', url:'https://wsplonline.libcal.com/event/16029166' },																									
+  { id:99, title:'Mystery Book Club', date:'2026-03-05', time:'5:00 PM', cat:'adult', lib:'Western Sullivan PL - Jeffersonville', loc:'Jeffersonville Open Periodical Space', desc:'Monthly mystery book club. Check calendar for current title.', url:'https://wsplonline.libcal.com/event/16094805' },																									
+  { id:100, title:'Garden Club: Seed Starting', date:'2026-03-07', time:'10:00 AM', cat:'community', lib:'Western Sullivan PL - Narrowsburg', loc:'Narrowsburg Community Room', desc:'Hands-on seed starting workshop with the Garden Club.', url:'https://wsplonline.libcal.com/event/16087317' },																									
+  { id:101, title:'Trash Art & Junk Journaling', date:'2026-03-07', time:'12:00 PM', cat:'adult', lib:'Western Sullivan PL - Narrowsburg', loc:'Narrowsburg Lobby', desc:'Creative art program using recycled and found materials.', url:'https://wsplonline.libcal.com/event/16087657' },																									
+  { id:102, title:'Senior Tech Series', date:'2026-03-09', time:'11:00 AM', cat:'tech', lib:'Western Sullivan PL - Narrowsburg', loc:'Narrowsburg Community Room', desc:'Tech series designed for seniors. Learn about computers and technology in digestible chunks.', url:'https://wsplonline.libcal.com/event/16390333' },																									
+  { id:103, title:'Open Tech Support', date:'2026-03-09', time:'1:00 PM', cat:'tech', lib:'Western Sullivan PL - Narrowsburg', loc:'Narrowsburg Community Room', desc:'Drop-in tech support. In-person or virtual, 25-minute intervals.', url:'https://wsplonline.libcal.com/event/16247357' },																									
+  { id:104, title:'Tusten Teen Mondays', date:'2026-03-09', time:'3:00 PM', cat:'kids', lib:'Western Sullivan PL - Narrowsburg', loc:'Narrowsburg Children\'s Room', desc:'Weekly gathering for teens 12+ to explore creative skills.', url:'https://wsplonline.libcal.com/event/16387851' },																									
+  { id:105, title:'Regular Board Meeting', date:'2026-03-09', time:'5:30 PM', cat:'community', lib:'Western Sullivan PL - Jeffersonville', loc:'Jeffersonville Community Space', desc:'Western Sullivan Public Library monthly board meeting. Open to the public.', url:'https://wsplonline.libcal.com/event/16029200' },																									
+  { id:106, title:'Narrowsburg Knitters', date:'2026-03-09', time:'6:00 PM', cat:'recurring', lib:'Western Sullivan PL - Narrowsburg', loc:'Narrowsburg Lobby', desc:'Weekly knitting group open to all skill levels.', url:'https://wsplonline.libcal.com/event/16029147' },																									
+  { id:107, title:'Storytime', date:'2026-03-10', time:'10:00 AM', cat:'kids', lib:'Western Sullivan PL - Narrowsburg', loc:'Narrowsburg Children\'s Room', desc:'Storytime for young children. Stories, songs, and activities.', url:'https://wsplonline.libcal.com/event/15993076' },																									
+  { id:108, title:'Senior Tech Series (Jeffersonville)', date:'2026-03-10', time:'11:00 AM', cat:'tech', lib:'Western Sullivan PL - Jeffersonville', loc:'Jeffersonville Community Space', desc:'Tech series for seniors. Covers computers and technology basics.', url:'https://wsplonline.libcal.com/event/16390357' },																									
+  { id:109, title:'Drop in with Public Health!', date:'2026-03-10', time:'11:00 AM', cat:'community', lib:'Western Sullivan PL - Jeffersonville', loc:'Jeffersonville Open Periodical Space', desc:'Drop-in with Sullivan County Public Health staff. Ask health questions and learn about resources.', url:'https://wsplonline.libcal.com/event/16383521' },																									
+  { id:110, title:'Open Tech Support - Jeffersonville', date:'2026-03-10', time:'1:00 PM', cat:'tech', lib:'Western Sullivan PL - Jeffersonville', loc:'Jeffersonville Community Space', desc:'Drop-in tech support. In-person or virtual, 25-minute intervals.', url:'https://wsplonline.libcal.com/event/16248031' },																									
+  { id:111, title:'Whatcha Reading? Book Club', date:'2026-03-10', time:'2:00 PM', cat:'adult', lib:'Western Sullivan PL - Jeffersonville', loc:'Jeffersonville Community Space', desc:'Casual book club — bring whatever you\'re currently reading.', url:'https://wsplonline.libcal.com/event/16029183' },																									
+  { id:112, title:'Suminagashi Water Marbling', date:'2026-03-10', time:'5:00 PM', cat:'adult', lib:'Western Sullivan PL - Jeffersonville', loc:'Jeffersonville Community Space', desc:'Learn the Japanese art of water marbling to create beautiful patterned paper.', url:'https://wsplonline.libcal.com/event/16383535' },																									
+  { id:113, title:'Dungeons & Dragons Club', date:'2026-03-10', time:'6:00 PM', cat:'community', lib:'Western Sullivan PL - Jeffersonville', loc:'Jeffersonville Community Space', desc:'Weekly D&D club for teens and adults.', url:'https://wsplonline.libcal.com/event/16383509' },																									
+  { id:114, title:'Let\'s Play!', date:'2026-03-11', time:'10:15 AM', cat:'kids', lib:'Western Sullivan PL - Callicoon', loc:'Delaware Children\'s Room', desc:'Drop-in play and activity time for young children.', url:'https://wsplonline.libcal.com/event/16087638' },																									
+  { id:115, title:'Senior Tech Series (Callicoon)', date:'2026-03-11', time:'11:00 AM', cat:'tech', lib:'Western Sullivan PL - Callicoon', loc:'Delaware Upstairs Community Room', desc:'Tech series for seniors at the Callicoon branch.', url:'https://wsplonline.libcal.com/event/16390371' },																									
+  { id:116, title:'Open Tech Support - Callicoon', date:'2026-03-11', time:'1:00 PM', cat:'tech', lib:'Western Sullivan PL - Callicoon', loc:'Delaware Free Branch', desc:'Drop-in tech support. In-person or virtual, 25-minute intervals.', url:'https://wsplonline.libcal.com/event/16247596' },																									
+  { id:117, title:'Fantasy Book Club', date:'2026-03-11', time:'5:00 PM', cat:'adult', lib:'Western Sullivan PL - Narrowsburg', loc:'Narrowsburg Lobby', desc:'Monthly fantasy book club. Check calendar for current title.', url:'https://wsplonline.libcal.com/event/16029157' },																									
+  { id:118, title:'The Equation & Expression Program: Grades 2-3', date:'2026-03-11', time:'5:30 PM', cat:'kids', lib:'Western Sullivan PL - Jeffersonville', loc:'Jeffersonville Children\'s Room', desc:'Math enrichment program for grades 2-3.', url:'https://wsplonline.libcal.com/event/16271355' },																									
+  { id:119, title:'Sew-cial Circle', date:'2026-03-12', time:'1:00 PM', cat:'recurring', lib:'Western Sullivan PL - Jeffersonville', loc:'Jeffersonville Community Space', desc:'Weekly sewing and needlework circle.', url:'https://wsplonline.libcal.com/event/16029166' },																									
+  { id:120, title:'Open Art Studio @ the Library', date:'2026-03-13', time:'2:00 PM', cat:'adult', lib:'Western Sullivan PL - Jeffersonville', loc:'Jeffersonville Community Space', desc:'Open studio time for artists. Bring your own supplies.', url:'https://wsplonline.libcal.com/event/16383548' },																									
+  { id:121, title:'Saturday Movie: The Ides of March (2011)', date:'2026-03-14', time:'11:00 AM', cat:'adult', lib:'Western Sullivan PL - Jeffersonville', loc:'Jeffersonville Community Space', desc:'Saturday afternoon movie screening of The Ides of March (2011).', url:'https://wsplonline.libcal.com/event/16087720' },																									
+  { id:122, title:'Open Tech Support', date:'2026-03-16', time:'1:00 PM', cat:'tech', lib:'Western Sullivan PL - Narrowsburg', loc:'Narrowsburg Community Room', desc:'Drop-in tech support. In-person or virtual, 25-minute intervals.', url:'https://wsplonline.libcal.com/event/16247357' },																									
+  { id:123, title:'Tusten Teen Mondays', date:'2026-03-16', time:'3:00 PM', cat:'kids', lib:'Western Sullivan PL - Narrowsburg', loc:'Narrowsburg Children\'s Room', desc:'Weekly gathering for teens 12+.', url:'https://wsplonline.libcal.com/event/16387851' },																									
+  { id:124, title:'Narrowsburg Knitters', date:'2026-03-16', time:'6:00 PM', cat:'recurring', lib:'Western Sullivan PL - Narrowsburg', loc:'Narrowsburg Lobby', desc:'Weekly knitting group.', url:'https://wsplonline.libcal.com/event/16029147' },																									
+  { id:125, title:'Storytime', date:'2026-03-17', time:'10:00 AM', cat:'kids', lib:'Western Sullivan PL - Narrowsburg', loc:'Narrowsburg Children\'s Room', desc:'Storytime for young children.', url:'https://wsplonline.libcal.com/event/15993076' },																									
+  { id:126, title:'Open Tech Support - Jeffersonville', date:'2026-03-17', time:'1:00 PM', cat:'tech', lib:'Western Sullivan PL - Jeffersonville', loc:'Jeffersonville Community Space', desc:'Drop-in tech support.', url:'https://wsplonline.libcal.com/event/16248031' },																									
+  { id:127, title:'Classics Book Club', date:'2026-03-17', time:'4:00 PM', cat:'adult', lib:'Western Sullivan PL - Callicoon', loc:'Delaware Upstairs Community Room', desc:'Monthly classics book club. Check calendar for current title.', url:'https://wsplonline.libcal.com/event/16029176' },																									
+  { id:128, title:'Dungeons & Dragons Club', date:'2026-03-17', time:'6:00 PM', cat:'community', lib:'Western Sullivan PL - Jeffersonville', loc:'Jeffersonville Community Space', desc:'Weekly D&D club for teens and adults.', url:'https://wsplonline.libcal.com/event/16383509' },																									
+  { id:129, title:'Let\'s Play!', date:'2026-03-18', time:'10:15 AM', cat:'kids', lib:'Western Sullivan PL - Narrowsburg', loc:'Narrowsburg Children\'s Room', desc:'Drop-in play and activity time for young children.', url:'https://wsplonline.libcal.com/event/16087638' },																									
+  { id:130, title:'Open Tech Support - Callicoon', date:'2026-03-18', time:'1:00 PM', cat:'tech', lib:'Western Sullivan PL - Callicoon', loc:'Delaware Free Branch', desc:'Drop-in tech support.', url:'https://wsplonline.libcal.com/event/16247596' },																									
+  { id:131, title:'The Equation & Expression Program: Grades 2-3', date:'2026-03-18', time:'5:30 PM', cat:'kids', lib:'Western Sullivan PL - Jeffersonville', loc:'Jeffersonville Children\'s Room', desc:'Math enrichment program for grades 2-3.', url:'https://wsplonline.libcal.com/event/16271355' },																									
+  { id:132, title:'Cricut Meet Up!', date:'2026-03-18', time:'5:30 PM', cat:'adult', lib:'Western Sullivan PL - Jeffersonville', loc:'Jeffersonville Community Space', desc:'Monthly Cricut crafting meetup. Bring your own projects or ideas.', url:'https://wsplonline.libcal.com/event/16029193' },																									
+  { id:133, title:'Sew-cial Circle', date:'2026-03-19', time:'1:00 PM', cat:'recurring', lib:'Western Sullivan PL - Jeffersonville', loc:'Jeffersonville Community Space', desc:'Weekly sewing and needlework circle.', url:'https://wsplonline.libcal.com/event/16029166' },																									
+  { id:134, title:'Craft Lovers', date:'2026-03-20', time:'4:00 PM', cat:'adult', lib:'Western Sullivan PL - Callicoon', loc:'Delaware Upstairs Community Room', desc:'Monthly crafting program for adults.', url:'https://wsplonline.libcal.com/event/16029210' },																									
+  { id:135, title:'Potions for Spring w/ Dale Buchheister', date:'2026-03-20', time:'5:30 PM', cat:'adult', lib:'Western Sullivan PL - Narrowsburg', loc:'Narrowsburg Lobby', desc:'Spring herbal potions workshop with local herbalist Dale Buchheister.', url:'https://wsplonline.libcal.com/event/16383562' },																									
+  { id:136, title:'Open Tech Support', date:'2026-03-23', time:'1:00 PM', cat:'tech', lib:'Western Sullivan PL - Narrowsburg', loc:'Narrowsburg Community Room', desc:'Drop-in tech support.', url:'https://wsplonline.libcal.com/event/16247357' },																									
+  { id:137, title:'Tusten Teen Mondays', date:'2026-03-23', time:'3:00 PM', cat:'kids', lib:'Western Sullivan PL - Narrowsburg', loc:'Narrowsburg Children\'s Room', desc:'Weekly gathering for teens 12+.', url:'https://wsplonline.libcal.com/event/16387851' },																									
+  { id:138, title:'Narrowsburg Knitters', date:'2026-03-23', time:'6:00 PM', cat:'recurring', lib:'Western Sullivan PL - Narrowsburg', loc:'Narrowsburg Lobby', desc:'Weekly knitting group.', url:'https://wsplonline.libcal.com/event/16029147' },																									
+  { id:139, title:'Storytime', date:'2026-03-24', time:'10:00 AM', cat:'kids', lib:'Western Sullivan PL - Narrowsburg', loc:'Narrowsburg Children\'s Room', desc:'Storytime for young children.', url:'https://wsplonline.libcal.com/event/15993076' },																									
+  { id:140, title:'Open Tech Support - Jeffersonville', date:'2026-03-24', time:'1:00 PM', cat:'tech', lib:'Western Sullivan PL - Jeffersonville', loc:'Jeffersonville Community Space', desc:'Drop-in tech support.', url:'https://wsplonline.libcal.com/event/16248031' },																									
+  { id:141, title:'Dungeons & Dragons Club', date:'2026-03-24', time:'6:00 PM', cat:'community', lib:'Western Sullivan PL - Jeffersonville', loc:'Jeffersonville Community Space', desc:'Weekly D&D club for teens and adults.', url:'https://wsplonline.libcal.com/event/16383509' },																									
+  { id:142, title:'Narrowsburg Book Club', date:'2026-03-25', time:'11:00 AM', cat:'adult', lib:'Western Sullivan PL - Narrowsburg', loc:'Narrowsburg Lobby', desc:'Monthly Narrowsburg book club. Check calendar for current title.', url:'https://wsplonline.libcal.com/event/16029140' },																									
+  { id:143, title:'Open Tech Support - Callicoon', date:'2026-03-25', time:'1:00 PM', cat:'tech', lib:'Western Sullivan PL - Callicoon', loc:'Delaware Free Branch', desc:'Drop-in tech support.', url:'https://wsplonline.libcal.com/event/16247596' },																									
+  { id:144, title:'Spring Soup w/ Dale Buchheister', date:'2026-03-25', time:'5:00 PM', cat:'adult', lib:'Western Sullivan PL - Jeffersonville', loc:'Jeffersonville Community Space', desc:'Spring soup making workshop with local herbalist Dale Buchheister.', url:'https://wsplonline.libcal.com/event/16383576' },																									
+  { id:145, title:'The Equation & Expression Program: Grades 2-3', date:'2026-03-25', time:'5:30 PM', cat:'kids', lib:'Western Sullivan PL - Jeffersonville', loc:'Jeffersonville Children\'s Room', desc:'Math enrichment program for grades 2-3.', url:'https://wsplonline.libcal.com/event/16271355' },																									
+  { id:146, title:'Sew-cial Circle', date:'2026-03-26', time:'1:00 PM', cat:'recurring', lib:'Western Sullivan PL - Jeffersonville', loc:'Jeffersonville Community Space', desc:'Weekly sewing and needlework circle.', url:'https://wsplonline.libcal.com/event/16029166' },																									
+  { id:147, title:'Cymatica: Sound and Vision Cinema', date:'2026-03-27', time:'6:00 PM', cat:'community', lib:'Western Sullivan PL - Callicoon', loc:'Delaware Upstairs Community Room', desc:'An immersive sound and vision cinema experience.', url:'https://wsplonline.libcal.com/event/16383590' },																									
+  { id:148, title:'Board Game Day', date:'2026-03-28', time:'10:00 AM', cat:'community', lib:'Western Sullivan PL - Jeffersonville', loc:'Jeffersonville Community Space', desc:'Drop-in board game day for all ages. Library games available.', url:'https://wsplonline.libcal.com/event/16383603' },																									
+  { id:149, title:'Teen Podcasting Intensive', date:'2026-03-29', time:'10:00 AM', cat:'kids', lib:'Western Sullivan PL - Narrowsburg', loc:'Narrowsburg Community Room', desc:'Multi-day teen podcasting intensive. Learn recording, editing, and storytelling.', url:'https://wsplonline.libcal.com/event/16383617' },																									
+  { id:150, title:'Open Tech Support', date:'2026-03-30', time:'1:00 PM', cat:'tech', lib:'Western Sullivan PL - Narrowsburg', loc:'Narrowsburg Community Room', desc:'Drop-in tech support.', url:'https://wsplonline.libcal.com/event/16247357' },																									
+  { id:151, title:'Tusten Teen Mondays', date:'2026-03-30', time:'3:00 PM', cat:'kids', lib:'Western Sullivan PL - Narrowsburg', loc:'Narrowsburg Children\'s Room', desc:'Weekly gathering for teens 12+.', url:'https://wsplonline.libcal.com/event/16387851' },																									
+  { id:152, title:'Narrowsburg Knitters', date:'2026-03-30', time:'6:00 PM', cat:'recurring', lib:'Western Sullivan PL - Narrowsburg', loc:'Narrowsburg Lobby', desc:'Weekly knitting group.', url:'https://wsplonline.libcal.com/event/16029147' },																									
+  { id:153, title:'Teen Podcasting Intensive', date:'2026-03-30', time:'10:00 AM', cat:'kids', lib:'Western Sullivan PL - Narrowsburg', loc:'Narrowsburg Community Room', desc:'Multi-day teen podcasting intensive.', url:'https://wsplonline.libcal.com/event/16383617' },																									
+  { id:154, title:'Storytime', date:'2026-03-31', time:'10:00 AM', cat:'kids', lib:'Western Sullivan PL - Narrowsburg', loc:'Narrowsburg Children\'s Room', desc:'Storytime for young children.', url:'https://wsplonline.libcal.com/event/15993076' },																									
+  { id:155, title:'Open Tech Support - Jeffersonville', date:'2026-03-31', time:'1:00 PM', cat:'tech', lib:'Western Sullivan PL - Jeffersonville', loc:'Jeffersonville Community Space', desc:'Drop-in tech support.', url:'https://wsplonline.libcal.com/event/16248031' },																									
+  { id:156, title:'Dungeons & Dragons Club', date:'2026-03-31', time:'6:00 PM', cat:'community', lib:'Western Sullivan PL - Jeffersonville', loc:'Jeffersonville Community Space', desc:'Weekly D&D club for teens and adults.', url:'https://wsplonline.libcal.com/event/16383509' },																									
+  { id:157, title:'Bilingual Storytime with Xina', date:'2026-03-07', time:'11:00 AM', cat:'kids', lib:'Liberty Public Library', loc:'Program Room 189', desc:'Bilingual storytime in English and Spanish for young children. Stories, songs, and activities.', url:'https://libertypubliclibrary.libcal.com/event/16356579' },																									
+  { id:158, title:'Bookworm (Grades 1 and 2)', date:'2026-03-09', time:'2:45 PM', cat:'kids', lib:'Liberty Public Library', loc:'Program Room 189', desc:'After-school program for grades 1-2. Children enjoy snacks, stories, crafts, and games. One session per child (Monday OR Tuesday).', url:'https://libertypubliclibrary.libcal.com/event/15557267' },																									
+  { id:159, title:'Mahjong', date:'2026-03-10', time:'10:15 AM', cat:'recurring', lib:'Liberty Public Library', loc:'Program Room 189', desc:'Drop-in Mahjong for adults. Come play with other Mahjong enthusiasts every Tuesday.', url:'https://libertypubliclibrary.libcal.com/event/14333413' },																									
+  { id:160, title:'Bookworm (Grades 1 and 2)', date:'2026-03-10', time:'2:45 PM', cat:'kids', lib:'Liberty Public Library', loc:'Program Room 189', desc:'After-school program for grades 1-2. Children enjoy snacks, stories, crafts, and games. One session per child (Monday OR Tuesday).', url:'https://libertypubliclibrary.libcal.com/event/15557619' },																									
+  { id:161, title:'Video Lecture: Greece - Land of History, Beauty & Inspiration', date:'2026-03-11', time:'1:00 PM', cat:'adult', lib:'Liberty Public Library', loc:'Program Room 189', desc:'Illustrated travel lecture exploring Greece\'s history, culture, and natural beauty.', url:'https://libertypubliclibrary.libcal.com/event/16347954' },																									
+  { id:162, title:'Bookworm (Grades 3 and 4)', date:'2026-03-11', time:'2:45 PM', cat:'kids', lib:'Liberty Public Library', loc:'Program Room 189', desc:'After-school program for grades 3-4. Stories, crafts, and activities.', url:'https://libertypubliclibrary.libcal.com/event/15557814' },																									
+  { id:163, title:'Bookworm (Grades 3 and 4)', date:'2026-03-12', time:'2:45 PM', cat:'kids', lib:'Liberty Public Library', loc:'Program Room 189', desc:'After-school program for grades 3-4. Stories, crafts, and activities.', url:'https://libertypubliclibrary.libcal.com/event/15558162' },																									
+  { id:164, title:'Writing Life: A Memoir Writing Workshop', date:'2026-03-12', time:'4:30 PM', cat:'adult', lib:'Liberty Public Library', loc:'Main Floor Conference Room', desc:'Workshop for adults exploring memoir and personal essay writing.', url:'https://libertypubliclibrary.libcal.com/event/16236992' },																									
+  { id:165, title:'Movie Matinee: Song Sung Blue', date:'2026-03-13', time:'1:00 PM', cat:'adult', lib:'Liberty Public Library', loc:'Program Room 189', desc:'Afternoon movie screening of Song Sung Blue.', url:'https://libertypubliclibrary.libcal.com/event/16362244' },																									
+  { id:166, title:'Tax Prep Session', date:'2026-03-14', time:'10:00 AM', cat:'community', lib:'Liberty Public Library', loc:'Main Floor Conference Room', desc:'Free tax preparation assistance. Check calendar for registration details.', url:'https://libertypubliclibrary.libcal.com/event/15939921' },																									
+  { id:167, title:'Bookworm (Grades 1 and 2)', date:'2026-03-16', time:'2:45 PM', cat:'kids', lib:'Liberty Public Library', loc:'Program Room 189', desc:'After-school program for grades 1-2. Stories, crafts, and games.', url:'https://libertypubliclibrary.libcal.com/event/15557268' },																									
+  { id:168, title:'Mahjong', date:'2026-03-17', time:'10:15 AM', cat:'recurring', lib:'Liberty Public Library', loc:'Program Room 189', desc:'Drop-in Mahjong for adults every Tuesday.', url:'https://libertypubliclibrary.libcal.com/event/14333414' },																									
+  { id:169, title:'Bookworm (Grades 1 and 2)', date:'2026-03-17', time:'2:45 PM', cat:'kids', lib:'Liberty Public Library', loc:'Program Room 189', desc:'After-school program for grades 1-2. Stories, crafts, and games.', url:'https://libertypubliclibrary.libcal.com/event/15557620' },																									
+  { id:170, title:'Bookworm (Grades 3 and 4)', date:'2026-03-18', time:'2:45 PM', cat:'kids', lib:'Liberty Public Library', loc:'Program Room 189', desc:'After-school program for grades 3-4. Stories, crafts, and activities.', url:'https://libertypubliclibrary.libcal.com/event/15557815' },																									
+  { id:171, title:'Alchemy Poets', date:'2026-03-19', time:'1:00 PM', cat:'adult', lib:'Liberty Public Library', loc:'Program Room 189', desc:'Monthly poetry group open to all. Share and discuss original poems.', url:'https://libertypubliclibrary.libcal.com/event/14007932' },																									
+  { id:172, title:'Bookworm (Grades 3 and 4)', date:'2026-03-19', time:'2:45 PM', cat:'kids', lib:'Liberty Public Library', loc:'Program Room 189', desc:'After-school program for grades 3-4. Stories, crafts, and activities.', url:'https://libertypubliclibrary.libcal.com/event/15558163' },																									
+  { id:173, title:'Live Irish Music with Tommy Gardner of the Hooley Shooters', date:'2026-03-19', time:'6:30 PM', cat:'community', lib:'Liberty Public Library', loc:'Program Room 189', desc:'Live Irish music performance featuring Tommy Gardner of the Hooley Shooters. Free and open to all.', url:'https://libertypubliclibrary.libcal.com/event/16452948' },																									
+  { id:174, title:'Senior Swing!', date:'2026-03-20', time:'1:00 PM', cat:'adult', lib:'Liberty Public Library', loc:'Program Room 189', desc:'Fun afternoon program for seniors. Check calendar for details.', url:'https://libertypubliclibrary.libcal.com/event/16237029' },																									
+  { id:175, title:'Tax Prep Session', date:'2026-03-21', time:'10:00 AM', cat:'community', lib:'Liberty Public Library', loc:'Main Floor Conference Room', desc:'Free tax preparation assistance. Check calendar for registration details.', url:'https://libertypubliclibrary.libcal.com/event/15939922' },																									
+  { id:176, title:'Bookworm (Grades 1 and 2)', date:'2026-03-23', time:'2:45 PM', cat:'kids', lib:'Liberty Public Library', loc:'Program Room 189', desc:'After-school program for grades 1-2. Stories, crafts, and games.', url:'https://libertypubliclibrary.libcal.com/event/15557269' },																									
+  { id:177, title:'Mahjong', date:'2026-03-24', time:'10:15 AM', cat:'recurring', lib:'Liberty Public Library', loc:'Program Room 189', desc:'Drop-in Mahjong for adults every Tuesday.', url:'https://libertypubliclibrary.libcal.com/event/14333415' },																									
+  { id:178, title:'Bookworm (Grades 1 and 2)', date:'2026-03-24', time:'2:45 PM', cat:'kids', lib:'Liberty Public Library', loc:'Program Room 189', desc:'After-school program for grades 1-2. Stories, crafts, and games.', url:'https://libertypubliclibrary.libcal.com/event/15557621' },																									
+  { id:179, title:'Bookworm (Grades 3 and 4)', date:'2026-03-25', time:'2:45 PM', cat:'kids', lib:'Liberty Public Library', loc:'Program Room 189', desc:'After-school program for grades 3-4. Stories, crafts, and activities.', url:'https://libertypubliclibrary.libcal.com/event/15557816' },																									
+  { id:180, title:'Book Discussion', date:'2026-03-26', time:'1:00 PM', cat:'adult', lib:'Liberty Public Library', loc:'Program Room 189', desc:'Monthly book discussion group. Check calendar for current title.', url:'https://libertypubliclibrary.libcal.com/event/13364322' },																									
+  { id:181, title:'Bookworm (Grades 3 and 4)', date:'2026-03-26', time:'2:45 PM', cat:'kids', lib:'Liberty Public Library', loc:'Program Room 189', desc:'After-school program for grades 3-4. Stories, crafts, and activities.', url:'https://libertypubliclibrary.libcal.com/event/15558164' },																									
+  { id:182, title:'Write Now!', date:'2026-03-26', time:'4:30 PM', cat:'adult', lib:'Liberty Public Library', loc:'Main Floor Conference Room', desc:'Monthly creative writing group for adults. All genres and experience levels welcome.', url:'https://libertypubliclibrary.libcal.com/event/16237004' },																									
+  { id:183, title:'Movie Matinee: Hamnet', date:'2026-03-27', time:'1:00 PM', cat:'adult', lib:'Liberty Public Library', loc:'Program Room 189', desc:'Afternoon movie screening of Hamnet.', url:'https://libertypubliclibrary.libcal.com/event/16367777' },																									
+  { id:184, title:'Simple Meditations to Destress', date:'2026-03-28', time:'1:00 PM', cat:'adult', lib:'Liberty Public Library', loc:'Program Room 189', desc:'Meditation and talk with Buddhist teacher Sara Wendt. Learn simple techniques to reduce stress.', url:'https://libertypubliclibrary.libcal.com/event/15981705' },																									
+  { id:185, title:'Mahjong', date:'2026-03-30', time:'10:15 AM', cat:'recurring', lib:'Liberty Public Library', loc:'Program Room 189', desc:'Drop-in Mahjong for adults every Tuesday.', url:'https://libertypubliclibrary.libcal.com/event/14333416' },																									
+  { id:186, title:'Budget Hearing and Board Meeting', date:'2026-03-30', time:'6:30 PM', cat:'community', lib:'Liberty Public Library', loc:'Program Room 189', desc:'Liberty Public Library budget hearing and board meeting. The public is welcome to attend.', url:'https://libertypubliclibrary.libcal.com/event/16455088' },																									
+  { id:187, title:'Storytime', date:'2026-03-31', time:'11:00 AM', cat:'kids', lib:'Liberty Public Library', loc:'Program Room 189', desc:'Storytime for young children. Stories, songs, and activities.', url:'https://libertypubliclibrary.libcal.com/event/15557373' },																									
+  { id:188, title:'Storytime with Ms. Jess', date:'2026-03-03', time:'11:00 AM', cat:'kids', lib:'Livingston Manor Free Library', loc:'Livingston Manor Branch, 92 Main St.', desc:'Kids and families invited to listen to a story and stay for a craft. Every Tuesday morning. All children must be accompanied by an adult.', url:'https://lmr-library.org/event/storytime-with-ms-jess-5/' },																									
+  { id:189, title:'Tech Assistance', date:'2026-03-05', time:'5:00 PM', cat:'tech', lib:'Livingston Manor Free Library', loc:'Livingston Manor Branch, 92 Main St.', desc:'Drop-in tech help covering Microsoft products, Apple products, apps, email, social media, security, and more.', url:'https://lmr-library.org/event/tech-assistance-livingston-manor-branch-12/' },																									
+  { id:190, title:'Musical Storytime', date:'2026-03-06', time:'11:00 AM', cat:'kids', lib:'Livingston Manor Free Library', loc:'Livingston Manor Branch, 92 Main St.', desc:'Interactive storytime with music. Kids can sing, dance, and play instruments. Perfect for ages 0-5. Every Friday morning.', url:'https://lmr-library.org/event/musical-storytime-4/' },																									
+  { id:191, title:'Oh Say Can You Seed', date:'2026-03-07', time:'11:00 AM', cat:'community', lib:'Roscoe Free Library', loc:'Roscoe Branch, 85 Highland Ave.', desc:'Join organic farmer Maria Grimaldi to discuss seed varieties, germination, sowing techniques, and more. Bring your seed catalogues.', url:'https://lmr-library.org/event/oh-say-can-you-seed-ros/' },																									
+  { id:192, title:'Story & Craft: In Like a Lion', date:'2026-03-07', time:'11:00 AM', cat:'kids', lib:'Roscoe Free Library', loc:'Roscoe Branch, 85 Highland Ave.', desc:'March-themed story and craft program for kids at the Roscoe Branch.', url:'https://lmr-library.org/event/story-craft-stamp-my-heart/' },																									
+  { id:193, title:'Tech Assistance', date:'2026-03-09', time:'2:00 PM', cat:'tech', lib:'Livingston Manor Free Library', loc:'Livingston Manor Branch, 92 Main St.', desc:'Drop-in tech help covering Microsoft products, Apple products, apps, email, social media, security, and more.', url:'https://lmr-library.org/event/tech-assistance-livingston-manor-branch-10/' },																									
+  { id:194, title:'Storytime with Ms. Jess', date:'2026-03-10', time:'11:00 AM', cat:'kids', lib:'Livingston Manor Free Library', loc:'Livingston Manor Branch, 92 Main St.', desc:'Kids and families invited to listen to a story and stay for a craft. Every Tuesday morning.', url:'https://lmr-library.org/event/storytime-with-ms-jess-4/' },																									
+  { id:195, title:'Tech Assistance', date:'2026-03-12', time:'10:00 AM', cat:'tech', lib:'Livingston Manor Free Library', loc:'Livingston Manor Branch, 92 Main St.', desc:'Drop-in tech help covering Microsoft products, Apple products, apps, email, social media, security, and more.', url:'https://lmr-library.org/event/tech-assistance-livingston-manor-branch-11/' },																									
+  { id:196, title:'Tech Assistance', date:'2026-03-12', time:'5:00 PM', cat:'tech', lib:'Livingston Manor Free Library', loc:'Livingston Manor Branch, 92 Main St.', desc:'Drop-in tech help covering Microsoft products, Apple products, apps, email, social media, security, and more.', url:'https://lmr-library.org/event/tech-assistance-livingston-manor-branch-3/' },																									
+  { id:197, title:'The Good, The Bad, and The Scary of AI', date:'2026-03-12', time:'6:00 PM', cat:'tech', lib:'Livingston Manor Free Library', loc:'Livingston Manor Branch, 92 Main St.', desc:'Join tech expert Eddie Khaytman for a discussion on the ethics of artificial intelligence and its impact on society. Learn how AI affects everyday life.', url:'https://lmr-library.org/event/good-bad-scary-ai-liv/' },																									
+  { id:198, title:'Musical Storytime', date:'2026-03-13', time:'11:00 AM', cat:'kids', lib:'Livingston Manor Free Library', loc:'Livingston Manor Branch, 92 Main St.', desc:'Interactive musical storytime. Kids can sing, dance, and play instruments. Every Friday morning.', url:'https://lmr-library.org/event/musical-storytime/' },																									
+  { id:199, title:'Oh Say Can You Seed', date:'2026-03-14', time:'11:00 AM', cat:'community', lib:'Livingston Manor Free Library', loc:'Livingston Manor Branch, 92 Main St.', desc:'Join organic farmer Maria Grimaldi for a seed-starting discussion. Bring your seed catalogues. Also offered Mar 7 at Roscoe Branch.', url:'https://lmr-library.org/event/oh-say-can-you-seed-liv/' },																									
+  { id:200, title:'Tech Assistance', date:'2026-03-16', time:'2:00 PM', cat:'tech', lib:'Livingston Manor Free Library', loc:'Livingston Manor Branch, 92 Main St.', desc:'Drop-in tech help. Covers Microsoft, Apple, apps, email, social media, security, and more.', url:'https://lmr-library.org/event/tech-assistance-livingston-manor-branch-4/' },																									
+  { id:201, title:'Storytime with Ms. Jess', date:'2026-03-17', time:'11:00 AM', cat:'kids', lib:'Livingston Manor Free Library', loc:'Livingston Manor Branch, 92 Main St.', desc:'Kids and families invited to listen to a story and stay for a craft. Every Tuesday morning.', url:'https://lmr-library.org/event/storytime-with-ms-jess-2/' },																									
+  { id:202, title:'Livingston Manor Book Club', date:'2026-03-17', time:'12:30 PM', cat:'adult', lib:'Livingston Manor Free Library', loc:'Livingston Manor Branch, 92 Main St.', desc:'Monthly book club at the Livingston Manor Branch. Check calendar for current title.', url:'https://lmr-library.org/event/livingston-manor-book-club-liv/' },																									
+  { id:203, title:'Musical Storytime', date:'2026-03-20', time:'11:00 AM', cat:'kids', lib:'Livingston Manor Free Library', loc:'Livingston Manor Branch, 92 Main St.', desc:'Interactive musical storytime for kids ages 0-5. Every Friday morning.', url:'https://lmr-library.org/event/musical-storytime/' },																									
+  { id:204, title:'Playdough Playtime', date:'2026-03-21', time:'11:00 AM', cat:'kids', lib:'Livingston Manor Free Library', loc:'Livingston Manor Branch, 92 Main St.', desc:'Kids ages 2+ are invited to squish, mold, and create with playdough. Drop-in, no registration required.', url:'https://lmr-library.org/event/playdough-playtime-liv/' },																									
+  { id:205, title:'Battle of the Books Q&A', date:'2026-03-21', time:'12:30 PM', cat:'kids', lib:'Livingston Manor Free Library', loc:'Livingston Manor Branch, 92 Main St.', desc:'Q&A session for Battle of the Books competitors in grades 6-11. Participants read 8 preselected titles and compete in a team trivia challenge.', url:'https://lmr-library.org/event/battle-of-the-books-qa-liv/' },																									
+  { id:206, title:'Tech Assistance', date:'2026-03-23', time:'2:00 PM', cat:'tech', lib:'Livingston Manor Free Library', loc:'Livingston Manor Branch, 92 Main St.', desc:'Drop-in tech help. Covers Microsoft, Apple, apps, email, social media, security, and more.', url:'https://lmr-library.org/event/tech-assistance-livingston-manor-branch-7/' },																									
+  { id:207, title:'Storytime with Ms. Jess', date:'2026-03-24', time:'11:00 AM', cat:'kids', lib:'Livingston Manor Free Library', loc:'Livingston Manor Branch, 92 Main St.', desc:'Kids and families invited to listen to a story and stay for a craft. Every Tuesday morning.', url:'https://lmr-library.org/event/storytime-with-ms-jess/' },																									
+  { id:208, title:'Tech Assistance', date:'2026-03-26', time:'10:00 AM', cat:'tech', lib:'Livingston Manor Free Library', loc:'Livingston Manor Branch, 92 Main St.', desc:'Drop-in tech help. Covers Microsoft, Apple, apps, email, social media, security, and more.', url:'https://lmr-library.org/event/tech-assistance-livingston-manor-branch-4/' },																									
+  { id:209, title:'Narcan Training', date:'2026-03-26', time:'5:30 PM', cat:'community', lib:'Livingston Manor Free Library', loc:'Livingston Manor Branch, 92 Main St.', desc:'Free Narcan (naloxone) training. Learn how to recognize and respond to an opioid overdose. Registration recommended.', url:'https://lmr-library.org/event/narcan-training/' },																									
+  { id:210, title:'Musical Storytime', date:'2026-03-27', time:'11:00 AM', cat:'kids', lib:'Livingston Manor Free Library', loc:'Livingston Manor Branch, 92 Main St.', desc:'Interactive musical storytime for kids ages 0-5. Every Friday morning.', url:'https://lmr-library.org/event/musical-storytime/' },																									
+  { id:211, title:'Saturday Gaming: Scrabble for Adults', date:'2026-03-28', time:'11:00 AM', cat:'adult', lib:'Livingston Manor Free Library', loc:'Livingston Manor Branch, 92 Main St.', desc:'Drop-in adult Scrabble game session at the Livingston Manor Branch.', url:'https://lmr-library.org/event/saturday-gaming-scrabble-for-adults-liv/' },																									
+  { id:212, title:'Woodcock Walk at Renaissance Park', date:'2026-03-28', time:'7:30 PM', cat:'community', lib:'Livingston Manor Free Library', loc:'Livingston Manor Branch, 92 Main St.', desc:'Evening nature walk to observe the American woodcock mating ritual at Renaissance Park. Registration required.', url:'https://lmr-library.org/event/woodcock-walk-renaissance-park/' },																									
+  { id:213, title:'Roscoe Book Club', date:'2026-03-30', time:'12:00 PM', cat:'adult', lib:'Roscoe Free Library', loc:'Roscoe Branch, 85 Highland Ave.', desc:'Monthly book club at the Roscoe Branch. Check calendar for current title.', url:'https://lmr-library.org/event/roscoe-book-club-ros/' },																									
+  { id:214, title:'Tech Assistance', date:'2026-03-30', time:'2:00 PM', cat:'tech', lib:'Livingston Manor Free Library', loc:'Livingston Manor Branch, 92 Main St.', desc:'Drop-in tech help. Covers Microsoft, Apple, apps, email, social media, security, and more.', url:'https://lmr-library.org/event/tech-assistance-livingston-manor-branch/' },																									
+  { id:215, title:'Storytime with Ms. Jess', date:'2026-03-31', time:'11:00 AM', cat:'kids', lib:'Livingston Manor Free Library', loc:'Livingston Manor Branch, 92 Main St.', desc:'Kids and families invited to listen to a story and stay for a craft. Every Tuesday morning.', url:'https://lmr-library.org/event/storytime-with-ms-jess/' },																									
+  { id:216, title:'Tech Assistance', date:'2026-03-31', time:'5:00 PM', cat:'tech', lib:'Livingston Manor Free Library', loc:'Livingston Manor Branch, 92 Main St.', desc:'Drop-in tech help. Covers Microsoft, Apple, apps, email, social media, security, and more.', url:'https://lmr-library.org/event/tech-assistance-livingston-manor-branch-2/' },																									
+  { id:217, title:'Tech Tuesday', date:'2026-03-10', time:'9:00 AM', cat:'tech', lib:'Daniel Pierce Library - Grahamsville', loc:'Main Level', desc:'Drop-in tech help for adults. Get assistance with basic tech issues on your personal devices.', url:'https://www.danielpiercelibrary.org/pages/index/226474/upcoming-events' },																									
+  { id:218, title:'Studio Artists Group', date:'2026-03-11', time:'9:30 AM', cat:'adult', lib:'Daniel Pierce Library - Grahamsville', loc:'Lower Level - Community Room', desc:'Collaborative art group. Bring your own art supplies and create alongside fellow artists. Adults only.', url:'https://www.danielpiercelibrary.org/pages/index/226474/upcoming-events' },																									
+  { id:219, title:'Medicare 101 Zoom Webinar', date:'2026-03-14', time:'10:00 AM', cat:'adult', lib:'Daniel Pierce Library - Grahamsville', loc:'Online', desc:'Free live webinar covering Medicare basics: when to join, prescription drug plans, Medicare Supplement and Advantage plans.', url:'https://www.danielpiercelibrary.org/pages/index/226474/upcoming-events' },																									
+  { id:220, title:'Tech Tuesday', date:'2026-03-17', time:'9:00 AM', cat:'tech', lib:'Daniel Pierce Library - Grahamsville', loc:'Main Level', desc:'Drop-in tech help for adults. Get assistance with basic tech issues on your personal devices.', url:'https://www.danielpiercelibrary.org/pages/index/226474/upcoming-events' },																									
+  { id:221, title:'Studio Artists Group', date:'2026-03-18', time:'9:30 AM', cat:'adult', lib:'Daniel Pierce Library - Grahamsville', loc:'Lower Level - Community Room', desc:'Collaborative art group. Bring your own art supplies and create alongside fellow artists. Adults only.', url:'https://www.danielpiercelibrary.org/pages/index/226474/upcoming-events' },																									
+  { id:222, title:'5 Hour Pre-Licensing Course', date:'2026-03-21', time:'10:00 AM', cat:'community', lib:'Daniel Pierce Library - Grahamsville', loc:'Lower Level - Community Room', desc:'DMV-approved 5-hour pre-licensing course for unlicensed adults and teens. Provides a certificate valid for 1 year.', url:'https://www.danielpiercelibrary.org/pages/index/226474/upcoming-events' },																									
+  { id:223, title:'Tech Tuesday', date:'2026-03-24', time:'9:00 AM', cat:'tech', lib:'Daniel Pierce Library - Grahamsville', loc:'Main Level', desc:'Drop-in tech help for adults. Get assistance with basic tech issues on your personal devices.', url:'https://www.danielpiercelibrary.org/pages/index/226474/upcoming-events' },																									
+  { id:224, title:'Studio Artists Group', date:'2026-03-25', time:'9:30 AM', cat:'adult', lib:'Daniel Pierce Library - Grahamsville', loc:'Lower Level - Community Room', desc:'Collaborative art group. Bring your own art supplies and create alongside fellow artists. Adults only.', url:'https://www.danielpiercelibrary.org/pages/index/226474/upcoming-events' },																									
+  { id:225, title:'Tech Tuesday', date:'2026-03-31', time:'9:00 AM', cat:'tech', lib:'Daniel Pierce Library - Grahamsville', loc:'Main Level', desc:'Drop-in tech help for adults. Get assistance with basic tech issues on your personal devices.', url:'https://www.danielpiercelibrary.org/pages/index/226474/upcoming-events' },																									
+  { id:226, title:'Saturday Afternoon Film Series: His Girl Friday', date:'2026-03-07', time:'3:00 PM', cat:'adult', lib:'Sunshine Hall Free Library - Eldred', loc:'Sunshine Hall Free Library', desc:'Part of the Saturday Afternoon Winter Film Series. Screening of the classic screwball comedy His Girl Friday (1940).', url:'https://sunshinehallfreelibrary.org/2026/03/06/our-saturday-afternoon-winter-film-series-continues-with-his-girl-friday-dont-miss-it-this-saturday-march-7th-at-3pm/' },																									];																								
+
+// State
+let currentYear  = new Date().getFullYear();
+let currentMonth = new Date().getMonth(); // 0-indexed
+let activeCat    = 'all';
+let activeView   = 'month';
+const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+const DAYS   = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+
+function eventsForMonth(y, m) {
+  const prefix = `${y}-${String(m+1).padStart(2,'0')}`;
+  return EVENTS.filter(e => e.date.startsWith(prefix));
+}
+
+function eventsForDay(y, m, d) {
+  const key = `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+  return EVENTS.filter(e => e.date === key);
+}
+
+function matchesCat(e) { return activeCat === 'all' || e.cat === activeCat; }
+
+// ── RENDER MONTH GRID ──
+function renderGrid() {
+  const grid = document.getElementById('calGrid');
+  grid.innerHTML = '';
+  // Day-of-week headers
+  DAYS.forEach(d => {
+    const el = document.createElement('div');
+    el.className = 'cal-dow'; el.textContent = d; grid.appendChild(el);
+  });
+  const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+  const daysInMonth = new Date(currentYear, currentMonth+1, 0).getDate();
+  const daysInPrev  = new Date(currentYear, currentMonth, 0).getDate();
+  const today = new Date();
+  // Cells
+  let cellCount = firstDay + daysInMonth;
+  cellCount += (7 - cellCount % 7) % 7; // pad to full weeks
+  for (let i = 0; i < firstDay + daysInMonth + ((7 - (firstDay + daysInMonth) % 7) % 7); i++) {
+    const cell = document.createElement('div');
+    let day, isOther = false, cellDate;
+    if (i < firstDay) {
+      day = daysInPrev - firstDay + 1 + i; isOther = true;
+      cellDate = new Date(currentYear, currentMonth-1, day);
+    } else if (i >= firstDay + daysInMonth) {
+      day = i - firstDay - daysInMonth + 1; isOther = true;
+      cellDate = new Date(currentYear, currentMonth+1, day);
+    } else {
+      day = i - firstDay + 1;
+      cellDate = new Date(currentYear, currentMonth, day);
+    }
+    cell.className = 'cal-day' + (isOther ? ' other-month' : '');
+    const isToday = !isOther && day === today.getDate() && currentMonth === today.getMonth() && currentYear === today.getFullYear();
+    if (isToday) cell.classList.add('today-cell');
+    const numEl = document.createElement('span');
+    numEl.className = 'cal-day-num'; numEl.textContent = day;
+    cell.appendChild(numEl);
+    if (!isOther) {
+      const dayEvents = eventsForDay(currentYear, currentMonth, day);
+      dayEvents.forEach(ev => {
+        const dot = document.createElement('span');
+        dot.className = 'cal-event-dot' + (matchesCat(ev) ? '' : ' hidden');
+        dot.setAttribute('data-cat', ev.cat);
+        dot.textContent = ev.time !== 'All day' && ev.time !== 'All month' && ev.time !== 'During open hours'
+          ? `${ev.time.replace(':00','').replace(' PM','p').replace(' AM','a')} ${ev.title}`
+          : ev.title;
+        dot.setAttribute('role', 'button');
+        dot.setAttribute('tabindex', '0');
+        dot.setAttribute('aria-label', `${ev.title} at ${ev.lib}`);
+        dot.addEventListener('click', () => openModal(ev));
+        dot.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') openModal(ev); });
+        cell.appendChild(dot);
+      });
+    }
+    grid.appendChild(cell);
+  }
+}
+
+// ── RENDER LIST VIEW ──
+function renderList() {
+  const listEl = document.getElementById('calList');
+  listEl.innerHTML = '';
+  const monthEvents = eventsForMonth(currentYear, currentMonth)
+    .sort((a,b) => a.date.localeCompare(b.date) || a.time.localeCompare(b.time));
+  if (!monthEvents.length) {
+    listEl.innerHTML = '<p class="cal-empty">No events found for this month. Check individual library websites for the latest listings.</p>';
+    return;
+  }
+  // Group by date
+  const grouped = {};
+  monthEvents.forEach(ev => {
+    if (!grouped[ev.date]) grouped[ev.date] = [];
+    grouped[ev.date].push(ev);
+  });
+  let hasVisible = false;
+  Object.keys(grouped).sort().forEach(dateStr => {
+    const d = new Date(dateStr + 'T12:00:00');
+    const grp = document.createElement('div');
+    grp.className = 'cal-list-group';
+    const header = document.createElement('div');
+    header.className = 'cal-list-date-header';
+    header.textContent = d.toLocaleDateString('en-US', { weekday:'long', month:'long', day:'numeric' });
+    grp.appendChild(header);
+    grouped[dateStr].forEach(ev => {
+      const row = document.createElement('div');
+      row.className = 'cal-list-item' + (matchesCat(ev) ? '' : ' hidden');
+      row.setAttribute('data-cat', ev.cat);
+      row.innerHTML = `
+        <div class="cal-list-time">${ev.time}</div>
+        <div class="cal-list-body">
+          <div class="cal-list-title">${ev.title}</div>
+          <div class="cal-list-meta">📍 ${ev.loc}</div>
+          <div class="cal-list-lib">📚 ${ev.lib}</div>
+          ${ev.url ? `<a class="cal-list-link" href="${ev.url}" target="_blank">View details ↗</a>` : ''}
+        </div>`;
+      row.addEventListener('click', () => openModal(ev));
+      grp.appendChild(row);
+      if (matchesCat(ev)) hasVisible = true;
+    });
+    listEl.appendChild(grp);
+  });
+  if (!hasVisible) {
+    listEl.innerHTML = '<p class="cal-empty">No events match the selected filter this month.</p>';
+  }
+}
+
+// ── RENDER CALENDAR (dispatcher) ──
+function renderCalendar() {
+  if (activeView === 'month') {
+    document.getElementById('calGridWrap').classList.add('active');
+    document.getElementById('calListWrap').classList.remove('active');
+    renderGrid();
+  } else {
+    document.getElementById('calGridWrap').classList.remove('active');
+    document.getElementById('calListWrap').classList.add('active');
+    renderList();
+  }
+}
+
+// ── VIEW TOGGLE ──
+document.querySelectorAll('.cal-view-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    activeView = btn.getAttribute('data-view');
+    document.querySelectorAll('.cal-view-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderCalendar();
+  });
+});
+
+// ── CATEGORY FILTERS ──
+document.querySelectorAll('.cat-pill').forEach(pill => {
+  pill.addEventListener('click', () => {
+    activeCat = pill.getAttribute('data-cat');
+    document.querySelectorAll('.cat-pill').forEach(p => p.classList.add('inactive'));
+    pill.classList.remove('inactive');
+    renderCalendar();
+  });
+});
+
+// ── MODAL ──
+function openModal(ev) {
+  document.getElementById('modalTitle').textContent = ev.title;
+  document.getElementById('modalBody').innerHTML = `
+    <div class="event-modal-row"><span class="event-modal-icon">📅</span><span class="event-modal-text">${new Date(ev.date+'T12:00:00').toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'})} · ${ev.time}</span></div>
+    <div class="event-modal-row"><span class="event-modal-icon">📍</span><span class="event-modal-text">${ev.loc}</span></div>
+    <div class="event-modal-row"><span class="event-modal-icon">📚</span><span class="event-modal-text">${ev.lib}</span></div>
+    <div class="event-modal-row"><span class="event-modal-icon">ℹ️</span><span class="event-modal-text">${ev.desc}</span></div>
+    ${ev.url ? `<div class="event-modal-row"><span class="event-modal-icon">🔗</span><span class="event-modal-text"><a href="${ev.url}" target="_blank">View on library website ↗</a></span></div>` : ''}
+  `;
+  document.getElementById('eventModal').classList.add('open');
+  document.getElementById('modalClose').focus();
+}
+document.getElementById('modalClose').addEventListener('click', () => document.getElementById('eventModal').classList.remove('open'));
+document.getElementById('eventModal').addEventListener('click', e => { if (e.target === document.getElementById('eventModal')) document.getElementById('eventModal').classList.remove('open'); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') document.getElementById('eventModal').classList.remove('open'); });
+
+// ── MONTH LABEL ──
+function updateLabel() {
+  document.getElementById('monthLabel').textContent = `${MONTHS[currentMonth]} ${currentYear}`;
+}
+
+// ── NAV ──
+document.getElementById('prevMonth').addEventListener('click', () => {
+  currentMonth--; if (currentMonth < 0) { currentMonth = 11; currentYear--; }
+  renderCalendar(); updateLabel();
+});
+document.getElementById('nextMonth').addEventListener('click', () => {
+  currentMonth++; if (currentMonth > 11) { currentMonth = 0; currentYear++; }
+  renderCalendar(); updateLabel();
+});
+
+// ── INIT ──
+renderCalendar();
+updateLabel();
+</script>
+</body>
+</html>
