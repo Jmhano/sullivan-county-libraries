@@ -1143,6 +1143,24 @@
           </div>
         </div>
 
+        <!-- Library filter -->
+<div style="margin-bottom: 1rem;">
+  <select id="libFilter" style="font-family:'DM Sans',sans-serif; font-size:0.875rem; font-weight:600; color:var(--navy); background:var(--card-bg); border:2px solid var(--border); border-radius:6px; padding:0.4rem 0.75rem; min-height:40px; cursor:pointer;">
+    <option value="all">📚 All Libraries</option>
+    <option value="EBCPL - Monticello">EBCPL - Monticello</option>
+    <option value="Mamakating Library - Wurtsboro">Mamakating Library</option>
+    <option value="Fallsburg Library - South Fallsburg">Fallsburg Library</option>
+    <option value="Western Sullivan PL - Narrowsburg">WSPL - Narrowsburg</option>
+    <option value="Western Sullivan PL - Jeffersonville">WSPL - Jeffersonville</option>
+    <option value="Western Sullivan PL - Callicoon">WSPL - Callicoon</option>
+    <option value="Liberty Public Library">Liberty Public Library</option>
+    <option value="Livingston Manor Free Library">Livingston Manor</option>
+    <option value="Roscoe Free Library">Roscoe Free Library</option>
+    <option value="Daniel Pierce Library - Grahamsville">Daniel Pierce Library</option>
+    <option value="Sunshine Hall Free Library - Eldred">Sunshine Hall</option>
+  </select>
+</div>
+
         <!-- Category filters -->
         <div class="cat-filters" role="group" aria-label="Filter by category">
           <button class="cat-pill" data-cat="all">All</button>
@@ -4609,6 +4627,7 @@
       let currentYear = new Date().getFullYear();
       let currentMonth = new Date().getMonth(); // 0-indexed
       let activeCat = "all";
+      let activeLib = "all";
       let activeView = "month";
       const MONTHS = [
         "January",
@@ -4638,9 +4657,11 @@
         return EVENTS.filter((e) => e.date === key);
       }
 
-      function matchesCat(e) {
-        return activeCat === "all" || e.cat === activeCat;
-      }
+function matchesCat(e) {
+  const catMatch = activeCat === "all" || e.cat === activeCat;
+  const libMatch = activeLib === "all" || e.lib === activeLib;
+  return catMatch && libMatch;
+}
 
       // ── RENDER MONTH GRID ──
       function renderGrid() {
@@ -4870,7 +4891,11 @@
         if (e.key === "Escape")
           document.getElementById("eventModal").classList.remove("open");
       });
-
+// ── LIBRARY FILTER ──
+document.getElementById("libFilter").addEventListener("change", function() {
+  activeLib = this.value;
+  renderCalendar();
+});
       // ── MONTH LABEL ──
       function updateLabel() {
         document.getElementById("monthLabel").textContent =
