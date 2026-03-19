@@ -4900,5 +4900,18 @@
       renderCalendar();
       updateLabel();
     </script>
+    <!-- EVENT MODAL -->
+<div id="modal" style="display:none; position:fixed; inset:0; z-index:1000; align-items:center; justify-content:center;">
+  <div id="modal-backdrop" onclick="closeModal()" style="position:absolute; inset:0; background:rgba(0,0,0,0.5);"></div>
+  <div id="modal-box" style="position:relative; background:#fff; border-radius:12px; padding:2rem; max-width:480px; width:90%; z-index:1001; box-shadow:0 8px 40px rgba(0,0,0,0.2);">
+    <button onclick="closeModal()" style="position:absolute; top:1rem; right:1rem; background:none; border:none; font-size:1.4rem; cursor:pointer; color:#666;">✕</button>
+    <div id="modal-cat-badge" style="display:inline-block; font-size:0.7rem; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; padding:0.25rem 0.75rem; border-radius:20px; margin-bottom:1rem;"></div>
+    <h2 id="modal-title" style="font-family:'Playfair Display',serif; font-size:1.3rem; color:#1a2744; margin:0 0 0.5rem;"></h2>
+    <p id="modal-time" style="font-size:0.9rem; font-weight:600; color:#555; margin:0 0 0.25rem;"></p>
+    <p id="modal-lib" style="font-size:0.85rem; color:#888; margin:0 0 1rem;"></p>
+    <p id="modal-desc" style="font-size:0.95rem; color:#333; line-height:1.6; margin:0 0 1.25rem;"></p>
+    <a id="modal-link" href="#" target="_blank" style="display:inline-block; background:#1a2744; color:#f0c85a; padding:0.6rem 1.25rem; border-radius:6px; font-size:0.85rem; font-weight:700; text-decoration:none;">View Event →</a>
+  </div>
+</div>
   </body>
 </html>
